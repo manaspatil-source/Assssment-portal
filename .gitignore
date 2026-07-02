@@ -1,0 +1,9 @@
+recordings/
+attempts.csv
+responses.csv
+users.csv
+
+__pycache__/
+*.pyc
+.env
+venv/

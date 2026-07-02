@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Recordings | Assessment Portal</title>
+</head>
+<body style="font-family: Arial, sans-serif; background:#f0f2f5; padding:40px;">
+
+  <h1>Uploaded Recordings</h1>
+  <p><a href="/admin">← Back to Admin</a></p>
+
+  {% if groups %}
+    {% for prefix, files in groups.items() %}
+      <div style="background:white;border:1px solid #d0d7e0;border-radius:8px;padding:20px;margin-bottom:20px;">
+        <h2>{{ prefix }}</h2>
+
+        <p>
+          <a href="/download_recording_zip/{{ prefix }}">Download ZIP</a>
+        </p>
+
+        <ul>
+          {% for file in files %}
+            <li>
+              {{ file }}
+              —
+              <a href="/download_recording/{{ file }}">Download chunk</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No recordings found.</p>
+  {% endif %}
+
+</body>
+</html>

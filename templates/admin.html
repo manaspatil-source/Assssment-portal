@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Panel | Assessment Portal</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      color: #1a2535;
+      padding: 40px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #d0d7e0;
+      border-radius: 8px;
+      padding: 24px;
+      max-width: 720px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      margin-bottom: 8px;
+    }
+
+    h2 {
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+
+    p {
+      color: #4a5568;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 16px;
+      background: #1d5fa7;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      margin: 6px 8px 6px 0;
+      font-size: 14px;
+    }
+
+    input[type="file"] {
+      margin: 12px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Assessment Admin Panel</h1>
+  <p>Upload users and download assessment data.</p>
+
+  <div class="card">
+    <h2>Upload Users from Excel / CSV</h2>
+    <p>File must contain two columns: <strong>email</strong> and <strong>password</strong>.</p>
+
+    <form action="/upload_users" method="POST" enctype="multipart/form-data">
+      <input type="file" name="users_file" accept=".csv,.xlsx" required>
+      <br>
+      <button class="btn" type="submit">Upload Users</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Download Tables</h2>
+    <p>Download current database tables as CSV files for Excel.</p>
+
+    <a class="btn" href="/download/users">Download users.csv</a>
+    <a class="btn" href="/download/attempts">Download attempts.csv</a>
+    <a class="btn" href="/download/responses">Download responses.csv</a>
+  </div>
+<div class="card">
+  <h2>Recordings</h2>
+  <p>View and download uploaded screen/webcam recording chunks.</p>
+
+  <a class="btn" href="/admin/recordings">View Recordings</a>
+</div>
+</body>
+</html>

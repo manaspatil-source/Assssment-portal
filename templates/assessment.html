@@ -1,0 +1,3852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cognitive Reasoning Assessment | Assessment Portal</title>
+  
+  <style>
+  /* =========================================================
+     COGNITIVE ASSESSMENT PORTAL — Enterprise UI
+     Visual redesign only. All JS/logic preserved exactly.
+  ========================================================= */
+
+  /* ── RESET & ROOT ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 15px; scroll-behavior: smooth; }
+
+  :root {
+    --bg: #f0f2f5;
+    --surface: #ffffff;
+    --surface-alt: #f7f9fb;
+    --border: #d0d7e0;
+    --border-strong: #b0bac8;
+    --accent: #1a3f6e;
+    --accent2: #1d5fa7;
+    --accent-light: #e8f0fb;
+    --accent-hover: #174e8c;
+    --danger: #c0392b;
+    --success: #1a7c4e;
+    --text: #1a2535;
+    --text-secondary: #4a5568;
+    --muted: #6b7a90;
+    --radius: 4px;
+    --radius-md: 6px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow: 0 2px 6px rgba(0,0,0,0.10);
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── TOP HEADER BAR ── */
+  
+
+  /* ── PROGRESS BAR ── */
+  .progress-bar-wrap {
+    position: fixed;
+    top: 44px; left: 0; right: 0;
+    height: 4px;
+    background: #cdd5e0;
+    z-index: 200;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: #2563eb;
+    transition: width 0.4s ease;
+  }
+
+  /* ── PAGE CONTAINER ── */
+  .page {
+    position: relative;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 1.25rem 1.5rem 3rem;
+    margin-top: 48px; /* header height */
+    animation: none;
+  }
+
+  /* ── SECTION LABEL (was puzzle-label) ── */
+  .puzzle-label {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    background: var(--accent-light);
+    border: 1px solid #c0d3ef;
+    border-radius: var(--radius);
+    padding: 0.2rem 0.6rem;
+    margin-bottom: 0.6rem;
+  }
+
+  /* ── HEADINGS ── */
+  h1 {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    font-size: 1.45rem;
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.2rem;
+    color: var(--text);
+    text-shadow: none;
+  }
+  h1 em {
+    font-style: normal;
+    color: var(--accent2);
+    background: none;
+    -webkit-background-clip: initial;
+    background-clip: initial;
+  }
+  h1 br { display: none; }
+
+  h3 {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 1rem 0 0.4rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    border: none;
+    height: 1px;
+    background: var(--border);
+    margin: 0.75rem 0 1rem;
+  }
+
+  /* ── PROBLEM / QUESTION CARD ── */
+  .problem-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent2);
+    border-radius: var(--radius-md);
+    padding: 1.1rem 1.25rem;
+    margin: 0.75rem 0 1rem;
+    font-size: 0.92rem;
+    line-height: 1.65;
+    box-shadow: var(--shadow-sm);
+  }
+  .problem-card::before, .problem-card::after { display: none; }
+  .problem-card p { margin-bottom: 0.6rem; }
+  .problem-card p:last-child { margin-bottom: 0; }
+
+  /* ── DATA TABLES ── */
+  .payoff-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.75rem 0;
+    font-size: 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .payoff-table th {
+    background: var(--surface-alt);
+    color: var(--text);
+    padding: 0.5rem 0.85rem;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-strong);
+    font-size: 0.82rem;
+  }
+  .payoff-table td {
+    padding: 0.45rem 0.85rem;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 0.88rem;
+  }
+  .payoff-table tbody tr:nth-child(even) td { background: #fafbfd; }
+
+  /* ── INPUTS ── */
+  input[type="number"], input[type="text"] {
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    color: var(--text);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9rem;
+    padding: 0.55rem 0.8rem;
+    width: 100%;
+    max-width: 300px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    box-shadow: none;
+  }
+  input:focus {
+    border-color: var(--accent2);
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+    background: #fff;
+  }
+  input:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    background: var(--surface-alt);
+  }
+
+  /* ── RADIO OPTIONS ── */
+  .options-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin: 0.5rem 0 1rem;
+  }
+  .radio-option {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 0.65rem 0.9rem;
+    cursor: pointer;
+    transition: border-color 0.12s, background 0.12s;
+    user-select: none;
+    box-shadow: none;
+  }
+  .radio-option:hover {
+    border-color: var(--accent2);
+    background: var(--accent-light);
+    transform: none;
+  }
+  .radio-option input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    border: 2px solid var(--border-strong);
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: border-color 0.12s, background 0.12s;
+    cursor: pointer;
+    background: var(--surface);
+  }
+  .radio-option input[type="radio"]:checked {
+    border-color: var(--accent2);
+    background: var(--accent2);
+    box-shadow: inset 0 0 0 3px #fff;
+  }
+  .radio-option input[type="radio"]:disabled { opacity: 0.5; }
+  .radio-option label { cursor: pointer; font-size: 0.92rem; font-weight: 500; color: var(--text); }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 0.52rem 1.1rem;
+    transition: background 0.12s, border-color 0.12s, color 0.12s;
+    position: relative;
+    overflow: hidden;
+    text-transform: none;
+  }
+  .btn::before { display: none; }
+  .btn:hover { transform: none; }
+
+  .btn-primary {
+    background: var(--accent2);
+    color: #ffffff;
+    border-color: var(--accent2);
+    box-shadow: none;
+    text-shadow: none;
+  }
+  .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+  .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
+
+  .btn-ghost {
+    background: var(--surface);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-strong);
+    box-shadow: none;
+  }
+  .btn-ghost:hover { background: var(--surface-alt); color: var(--accent2); border-color: var(--accent2); }
+
+  .btn-next {
+    background: var(--accent2);
+    color: #ffffff;
+    border-color: var(--accent2);
+    box-shadow: none;
+  }
+  .btn-next:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+
+  /* ── FEEDBACK MESSAGES ── */
+  .feedback { margin: 0.85rem 0; min-height: 1.2rem; font-size: 0.9rem; }
+  .feedback-correct, .feedback-wrong, .feedback-saved {
+    display: inline-flex; align-items: flex-start; gap: 0.6rem;
+    border-radius: var(--radius-md);
+    padding: 0.65rem 0.9rem;
+    line-height: 1.55; width: 100%;
+    backdrop-filter: none;
+    box-shadow: none;
+  }
+  .feedback-correct {
+    background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46;
+  }
+  .feedback-wrong {
+    background: #fef2f2; border: 1px solid #fca5a5; color: #991b1b;
+  }
+  .feedback-saved {
+    background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af;
+  }
+  .feedback-icon { font-size: 1rem; flex-shrink: 0; margin-top: 0.05rem; }
+  .feedback-body strong { display: block; font-weight: 600; margin-bottom: 0.2rem; }
+
+  /* ── ACTION ROW ── */
+  .action-row {
+    display: flex; flex-wrap: wrap; gap: 0.6rem;
+    margin-top: 1rem; align-items: center;
+  }
+
+  /* ── QUESTION LIST (HOME PAGE) ── */
+  .puzzle-list { list-style: none; display: flex; flex-direction: column; gap: 0; margin: 0.75rem 0 1rem; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+  .puzzle-list-item .pli-link {
+    display: flex; align-items: center; gap: 0.85rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0.75rem 1rem;
+    color: var(--text);
+    cursor: pointer;
+    transition: background 0.12s;
+    box-shadow: none;
+  }
+  .puzzle-list-item:last-child .pli-link { border-bottom: none; }
+  .puzzle-list-item .pli-link:hover {
+    background: var(--accent-light);
+    border-color: var(--border);
+    transform: none;
+    box-shadow: none;
+  }
+  .puzzle-num {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.72rem;
+    color: var(--accent2);
+    background: var(--accent-light);
+    border: 1px solid #c0d3ef;
+    border-radius: var(--radius);
+    padding: 0.15rem 0.45rem;
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+    font-weight: 700;
+  }
+  .puzzle-title { font-size: 0.9rem; font-weight: 500; }
+  .puzzle-arrow { margin-left: auto; color: var(--muted); font-size: 0.85rem; transition: color 0.12s; }
+  .puzzle-list-item .pli-link:hover .puzzle-arrow { color: var(--accent2); transform: none; }
+
+  /* ── GUESS TRACK (Q1) ── */
+  .guess-track { display: flex; gap: 0.4rem; margin: 0.75rem 0; flex-wrap: wrap; }
+  .guess-pip {
+    width: 26px; height: 26px; border-radius: 50%;
+    border: 2px solid var(--border-strong);
+    background: var(--surface);
+    transition: background 0.2s, border-color 0.2s;
+    box-shadow: none;
+  }
+  .guess-pip.correct { background: #16a34a; border-color: #16a34a; transform: none; box-shadow: none; }
+  .guess-pip.wrong   { background: var(--danger); border-color: var(--danger); box-shadow: none; }
+
+  /* ── MONO INLINE CODE ── */
+  .mono {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.87em;
+    background: #eef3fa;
+    border: 1px solid #c8d6e8;
+    border-radius: 3px;
+    padding: 0.08em 0.38em;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* ── RESULTS PAGE ── */
+  .completion-icon {
+    font-size: 2.5rem; margin-bottom: 0.75rem;
+    display: block; filter: none; animation: none;
+  }
+  .score-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--accent2);
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    font-size: 1.7rem; font-weight: 700;
+    padding: 0.7rem 2rem;
+    border-radius: var(--radius-md);
+    box-shadow: none;
+    margin: 0.85rem 0 0.5rem;
+    letter-spacing: -0.01em;
+    text-shadow: none;
+  }
+
+  /* ── REVIEW CARDS (RESULTS) ── */
+  .review-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 0.9rem 1.1rem;
+    margin-bottom: 0.65rem;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .review-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; width: 4px; height: 100%;
+  }
+  .review-card.correct::before { background: #16a34a; }
+  .review-card.wrong::before   { background: var(--danger); }
+  .review-title {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    font-weight: 600; font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+    display: flex; align-items: center; gap: 0.5rem;
+    color: var(--text);
+  }
+  .rtag {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.68rem; letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius);
+    margin-left: auto;
+    font-weight: 700;
+  }
+  .review-card.correct .rtag { background: #dcfce7; color: #15803d; }
+  .review-card.wrong .rtag   { background: #fee2e2; color: #dc2626; }
+  .review-body { font-size: 0.86rem; color: var(--text-secondary); line-height: 1.6; margin-top: 0.35rem; }
+
+  /* ── CHOICE GRID (multiple choice cards) ── */
+  .choice-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 0.5rem;
+    margin: 0.5rem 0 1rem;
+  }
+  .choice-card {
+    display: flex; align-items: center; gap: 0.75rem; min-height: 60px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 0.75rem 0.9rem;
+    cursor: pointer; user-select: none;
+    position: relative; overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: border-color 0.12s, background 0.12s;
+  }
+  .choice-card:hover {
+    transform: none;
+    border-color: var(--accent2);
+    background: var(--accent-light);
+    box-shadow: var(--shadow-sm);
+  }
+  .choice-card input { position: absolute; opacity: 0; pointer-events: none; }
+  .choice-card .choice-icon {
+    width: 36px; height: 36px;
+    border-radius: var(--radius-md);
+    display: grid; place-items: center;
+    font-size: 1.1rem;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .choice-card .choice-title { display: block; font-weight: 600; color: var(--text); line-height: 1.25; font-size: 0.9rem; }
+  .choice-card .choice-sub { display: block; font-size: 0.78rem; color: var(--muted); margin-top: 0.1rem; line-height: 1.35; }
+  .choice-card:has(input:checked), .choice-card.selected {
+    border-color: var(--accent2);
+    background: var(--accent-light);
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.15);
+  }
+  .choice-card:has(input:checked)::after, .choice-card.selected::after {
+    content: '✓'; position: absolute; top: 0.55rem; right: 0.65rem;
+    font-family: monospace; color: var(--accent2); font-weight: 700; font-size: 0.85rem;
+  }
+
+  /* ── VISUAL INPUT PANEL ── */
+  .visual-input-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 0.85rem;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 0.75rem;
+    backdrop-filter: none;
+  }
+
+  /* ── POSITION / STEP GRIDS ── */
+  .position-grid, .step-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(42px, 1fr));
+    gap: 0.35rem;
+  }
+  .pos-btn, .step-btn, .stall-slot, .breed-chip {
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    min-height: 38px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.8rem;
+    cursor: pointer;
+    color: var(--text);
+    box-shadow: none;
+    transition: border-color 0.12s, background 0.12s;
+  }
+  .pos-btn:hover, .step-btn:hover, .stall-slot:hover, .breed-chip:hover {
+    transform: none;
+    border-color: var(--accent2);
+    background: var(--accent-light);
+  }
+  .pos-btn.selected, .step-btn.selected, .stall-slot.filled {
+    background: var(--accent-light);
+    border-color: var(--accent2);
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.15);
+    color: var(--accent2);
+    font-weight: 700;
+  }
+  .step-btn.required { border-color: #d97706; }
+  .builder-summary {
+    margin-top: 0.65rem; color: var(--muted); font-size: 0.82rem;
+    font-family: 'Courier New', Courier, monospace;
+  }
+
+  /* ── STALL BOARD (Q7) ── */
+  .stall-board {
+    display: grid;
+    grid-template-columns: repeat(11, 1fr);
+    gap: 0.35rem;
+    margin-bottom: 0.65rem;
+  }
+  .stall-slot { height: 50px; display: grid; place-items: center; font-size: 0.9rem; position: relative; }
+  .stall-slot::before {
+    content: attr(data-index); position: absolute;
+    top: 3px; left: 5px; font-size: 0.55rem; color: var(--muted);
+  }
+  .breed-palette { display: flex; flex-wrap: wrap; gap: 0.45rem; margin: 0.6rem 0; }
+  .breed-chip { padding: 0.55rem 0.85rem; min-height: auto; font-weight: 700; }
+  .breed-chip.active { border-color: var(--accent2); background: var(--accent-light); box-shadow: 0 0 0 2px rgba(37,99,235,0.15); color: var(--accent2); }
+  .slot-input {
+    width: 40px; height: 48px;
+    text-align: center;
+    font-size: 1.05rem;
+    font-weight: 700;
+    font-family: 'Courier New', Courier, monospace;
+    text-transform: uppercase;
+    border: 2px solid var(--border-strong);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text-primary);
+    caret-color: var(--accent2);
+    outline: none;
+    transition: border-color 0.12s, background 0.12s;
+  }
+  .slot-input:focus { border-color: var(--accent2); background: var(--accent-light); }
+  .slot-input.filled { border-color: var(--accent2); color: var(--accent2); }
+  .slot-input.over-limit { border-color: #dc2626; background: rgba(220,38,38,0.07); color: #dc2626; }
+  .count-badge { padding: 0.3rem 0.65rem; border-radius: 5px; border: 1.5px solid var(--border-strong); background: var(--surface); color: var(--text-secondary); }
+  .count-badge.full { color: #dc2626; border-color: #dc2626; background: rgba(220,38,38,0.06); }
+  .count-badge.ok { color: var(--accent2); border-color: var(--accent2); }
+
+  /* ── RANGE SLIDER (Q8) ── */
+  .range-wrap { padding: 0.5rem 0.25rem 0.25rem; }
+  input[type="range"] { width: 100%; accent-color: var(--accent2); }
+  .range-readout {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    font-size: 1.5rem; font-weight: 700; color: var(--text); margin: 0.35rem 0;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .page { padding: 1rem 1rem 3rem; }
+    h1 { font-size: 1.2rem; }
+    input[type="number"], input[type="text"] { max-width: 100%; }
+    .stall-board { grid-template-columns: repeat(6, 1fr); }
+    .choice-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── QUESTION NAVIGATOR (Moodle-style) ── */
+  #qnav-panel {
+    position: fixed;
+    top: 52px;
+    left: 1rem;
+    z-index: 500;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.14);
+    padding: 1rem 1.15rem;
+    width: 280px;
+    display: none;
+    flex-direction: column;
+    gap: 0.7rem;
+    font-size: 0.82rem;
+  }
+  #qnav-panel.visible { display: flex; }
+  #qnav-title {
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.45rem;
+  }
+  #qnav-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.35rem;
+  }
+  .qnav-btn {
+    width: 42px; height: 42px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border-strong);
+    background: var(--surface);
+    font-size: 0.82rem;
+    font-weight: 700;
+    font-family: 'Courier New', Courier, monospace;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: background 0.12s, border-color 0.12s, color 0.12s;
+    display: grid;
+    place-items: center;
+  }
+  .qnav-btn:hover { border-color: var(--accent2); background: var(--accent-light); color: var(--accent2); }
+  .qnav-btn.nav-current { border-color: var(--accent2); box-shadow: 0 0 0 2px rgba(37,99,235,0.2); color: var(--accent2); font-weight: 800; }
+  .qnav-btn.nav-answered { background: #16a34a; border-color: #16a34a; color: #fff; }
+  .qnav-btn.nav-flagged  { background: #d97706; border-color: #d97706; color: #fff; }
+  .qnav-btn.nav-answered.nav-flagged { background: #d97706; border-color: #d97706; }
+
+  #qnav-legend {
+    display: flex; flex-wrap: wrap; gap: 0.4rem 0.7rem;
+    font-size: 0.7rem; color: var(--muted);
+  }
+  .nav-legend-dot {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 3px;
+    margin-right: 3px;
+    vertical-align: middle;
+  }
+  #qnav-flag-row {
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  #qnav-flag-btn {
+    flex: 1;
+    padding: 0.38rem 0;
+    background: var(--surface-alt);
+    border: 1.5px solid var(--border-strong);
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: background 0.12s, border-color 0.12s, color 0.12s;
+  }
+  #qnav-flag-btn:hover, #qnav-flag-btn.active { background: #fef3c7; border-color: #d97706; color: #92400e; }
+  #qnav-submit-btn {
+    width: 100%;
+    padding: 0.52rem;
+    background: var(--accent2);
+    border: none;
+    border-radius: 7px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.8rem;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    transition: background 0.12s;
+  }
+  #qnav-submit-btn:hover { background: var(--accent-hover); }
+  #qnav-section-btn {
+    width: 100%;
+    padding: 0.52rem;
+    background: #059669;
+    border: none;
+    border-radius: 7px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.8rem;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    transition: background 0.12s;
+    margin-top: -0.1rem;
+  }
+  #qnav-section-btn:hover { background: #047857; }
+  #qnav-timer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.38rem 0.65rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    font-family: 'Courier New', Courier, monospace;
+  }
+  #qnav-timer-label { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); font-family: inherit; }
+  #qnav-timer-val { color: var(--text); font-size: 0.95rem; }
+  #qnav-timer.timer-warn #qnav-timer-val { color: #d97706; }
+  #qnav-timer.timer-danger #qnav-timer-val { color: #dc2626; animation: timerPulse 1s infinite; }
+  #qnav-section-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  @keyframes timerPulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+  /* Confirm overlay */
+  #nav-lock-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(10,20,40,0.55);
+    z-index: 1000;
+    align-items: center; justify-content: center;
+  }
+  #nav-lock-overlay.visible { display: flex; }
+  #nav-lock-box {
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 1.75rem 1.85rem;
+    max-width: 380px; width: 92%;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    text-align: center;
+  }
+  #nav-lock-box h2 { font-size: 1.05rem; margin-bottom: 0.5rem; }
+  #nav-lock-box p { font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1.25rem; line-height: 1.5; }
+  .nav-lock-btns { display: flex; gap: 0.65rem; justify-content: center; }
+
+  /* ── CONFIRM MODAL ── */
+  #confirm-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(10,20,40,0.55);
+    z-index: 1100;
+    align-items: center; justify-content: center;
+  }
+  #confirm-overlay.visible { display: flex; }
+  #confirm-box {
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 1.75rem 1.85rem;
+    max-width: 400px; width: 92%;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+    text-align: center;
+  }
+  #confirm-box .confirm-icon { font-size: 2rem; margin-bottom: 0.6rem; display: block; }
+  #confirm-box h2 { font-size: 1.05rem; margin-bottom: 0.5rem; }
+  #confirm-box p { font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1.35rem; line-height: 1.55; }
+  .confirm-btns { display: flex; gap: 0.65rem; justify-content: center; }
+</style>
+</head>
+<body>
+ 
+<!-- Lock overlay -->
+<div id="nav-lock-overlay">
+  <div id="nav-lock-box">
+    <h2>⚠ Assessment in Progress</h2>
+    <p>You cannot leave the assessment once it has started. Please complete and submit all questions, or submit now to see your current results.</p>
+    <div class="nav-lock-btns">
+      <button class="btn btn-ghost" onclick="closeLockOverlay()">Continue Assessment</button>
+      <button class="btn btn-primary" onclick="confirmSubmitAssessment()">Submit Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm modal -->
+<div id="confirm-overlay">
+  <div id="confirm-box">
+    <span class="confirm-icon" id="confirm-icon">⚠️</span>
+    <h2 id="confirm-title">Are you sure?</h2>
+    <p id="confirm-message">This action cannot be undone.</p>
+    <div class="confirm-btns">
+      <button class="btn btn-ghost" onclick="closeConfirm()">Go Back</button>
+      <button class="btn btn-primary" id="confirm-ok-btn">Yes, Confirm</button>
+    </div>
+  </div>
+</div>
+<!-- Saving overlay -->
+<div id="saving-overlay" style="
+display:none;
+position:fixed;
+inset:0;
+background:rgba(255,255,255,0.92);
+z-index:9999;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+font-family:Arial,sans-serif;
+">
+  <div style="font-size:24px;margin-bottom:15px;">⏳</div>
+  <div style="font-size:18px;font-weight:600;">
+    Saving Section...
+  </div>
+  <div style="margin-top:10px;color:#666;">
+    Please wait. Do not close this window.
+  </div>
+</div>
+<div id="submit-overlay" style="
+display:none;
+position:fixed;
+inset:0;
+background:rgba(255,255,255,0.94);
+z-index:10000;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+font-family:Arial,sans-serif;
+">
+  <div style="font-size:24px;margin-bottom:15px;">⏳</div>
+  <div style="font-size:18px;font-weight:600;">
+    Submitting Assessment...
+  </div>
+  <div style="margin-top:10px;color:#666;">
+    Please wait while your responses and recording are uploaded.
+  </div>
+</div>
+<!-- Moodle-style Question Navigator -->
+<div id="qnav-panel">
+  <div id="qnav-section-label"><span id="qnav-section-name">Section 1</span><span id="qnav-section-qs"></span></div>
+  <div id="qnav-timer">
+    <span id="qnav-timer-label">Time left</span>
+    <span id="qnav-timer-val">--:--</span>
+  </div>
+  <div id="qnav-title">Questions</div>
+  <div id="qnav-grid"></div>
+  <div id="qnav-flag-row">
+    <button id="qnav-flag-btn" onclick="toggleFlagCurrent()">🚩 Flag this question</button>
+  </div>
+  <div id="qnav-legend">
+    <span><span class="nav-legend-dot" style="background:#16a34a"></span>Answered</span>
+    <span><span class="nav-legend-dot" style="background:#d97706"></span>Flagged</span>
+    <span><span class="nav-legend-dot" style="background:var(--surface);border:1.5px solid #b0bac8;display:inline-block;box-sizing:border-box"></span>Not yet</span>
+  </div>
+  <button id="qnav-section-btn" onclick="confirmSubmitSection()">Submit Section →</button>
+  <button id="qnav-submit-btn" onclick="confirmSubmitAssessment()">Submit Assessment</button>
+</div>
+
+
+<div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar" style="width:0%"></div></div>
+ 
+<!-- ══════════════════════════════════════════
+     ALL PAGES (hidden/shown via JS)
+══════════════════════════════════════════ -->
+ 
+<!-- HOME -->
+<div id="page-home" class="page">
+  <span class="puzzle-label">Cognitive Reasoning Assessment · 9 Questions</span>
+  <h1>Cognitive Reasoning <em>Assessment</em></h1>
+  <hr class="divider">
+  <p style="color:var(--muted);max-width:560px;margin-bottom:0.25rem;">
+    This assessment contains 9 questions across 3 timed sections. Section 1 (Q1–Q3): 20 min · Section 2 (Q4–Q6): 30 min · Section 3 (Q7–Q9): 20 min. You cannot leave once a section has started.
+  </p>
+  <div style="margin:1rem 0;padding:0.9rem 1rem;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface-alt);">
+  <label style="display:flex;gap:0.65rem;align-items:flex-start;font-size:0.9rem;color:var(--text-secondary);line-height:1.5;">
+
+    <input type="checkbox" id="recordingConsent" style="margin-top:0.25rem;width:auto;">
+
+    <span>
+      I consent to screen, webcam, and microphone recording during this assessment. Leaving the assessment window or stopping screen sharing may result in warnings or automatic submission.
+    </span>
+
+  </label>
+</div>
+  <div class="action-row" style="margin:0.85rem 0 1.1rem;">
+  <button class="btn btn-primary" onclick="startAssessment()">
+    Begin Assessment →
+  </button>
+</div>
+<div style="margin:0.75rem 0 1rem;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);padding:1rem 1.15rem;">
+  <h3 style="margin-top:0;">Assessment Instructions</h3>
+
+  <ul style="margin-left:1.25rem;color:var(--text-secondary);font-size:0.92rem;line-height:1.7;">
+    <li>This assessment has <strong>9 questions</strong> across <strong>3 timed sections</strong>.</li>
+    <li>Once a section begins, you cannot return to previous sections after submitting them.</li>
+    <li>Do not copy, paste, right-click, or use clipboard shortcuts during the assessment.</li>
+    <li>Do not switch tabs, minimise the browser, or leave the assessment window.</li>
+    <li>You are allowed <strong>one warning</strong> for leaving the assessment window. A second violation may automatically submit the assessment.</li>
+    <li>Screen sharing, webcam, and microphone permissions are required to begin.</li>
+    <li>For coding questions, use the provided Python editor and enter the final answer in the answer box.</li>
+    <li> The use of A.I., or any other external assistance is <b> strictly prohibited </b> </li>
+    <li> This assessment must <b> not </b> be attempted on a mobile/tablet or any other device other than a laptop or a computer </li>
+    <li>Use the <strong>Submit Section</strong> button to finish each section.</li>
+  </ul>
+</div>
+  <div class="action-row">
+    <button class="btn btn-primary" onclick="startAssessment()">Begin Assessment →</button>
+  </div>
+</div>
+ 
+<!-- Q1: Find the Number -->
+<div id="page-q1" class="page" style="display:none">
+  <span class="puzzle-label">Section 1 of 3 · Question 1</span>
+  <h1>Question: Find the <em>Number</em></h1>
+  <hr class="divider">
+  <div class="problem-card">
+    <p>A number from <strong>0 to 100</strong> has been chosen secretly.</p>
+    <p>Guess it. After each guess you'll be told if you went <em>too high</em> or <em>too low</em>.</p>
+    <p>You have a maximum of <strong>7 guesses</strong>.</p>
+  </div>
+  <h3>Your guess</h3>
+  <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
+    <input type="number" id="q1-guess" min="0" max="100" step="1" placeholder="0 – 100" oninput="this.value=this.value.replace(/[^0-9]/g,'');if(this.value>100)this.value=100;if(this.value<0)this.value=0;">
+    <button class="btn btn-primary" id="q1-submitBtn" onclick="q1Check()">Submit Guess</button>
+  </div>
+  <div class="guess-track" id="q1-pips">
+    <div class="guess-pip" id="q1-pip1"></div><div class="guess-pip" id="q1-pip2"></div>
+    <div class="guess-pip" id="q1-pip3"></div><div class="guess-pip" id="q1-pip4"></div>
+    <div class="guess-pip" id="q1-pip5"></div><div class="guess-pip" id="q1-pip6"></div>
+    <div class="guess-pip" id="q1-pip7"></div>
+  </div>
+  <div class="feedback" id="q1-fb"></div>
+  <div class="action-row" id="q1-nav" style="margin-top:1.25rem;">
+    <button class="btn btn-ghost" disabled style="opacity:0.3;cursor:default">← Previous</button>
+    <button class="btn btn-next" onclick="navNext('q1')">Next →</button>
+  </div>
+</div>
+ 
+<!-- Q2: Interrogation -->
+<div id="page-q2" class="page" style="display:none">
+  <span class="puzzle-label">Section 1 of 3 · Question 2</span>
+  <h1>Question: Two People Under <em>Interrogation</em></h1>
+  <hr class="divider">
+  <div class="problem-card">
+    <p>You and your friend are in separate rooms under police interrogation. You cannot communicate. Each of you must independently choose to <strong>confess</strong> or <strong>stay silent</strong>.</p>
+    <p>You believe your friend will confess with a probability of <span class="mono">10%</span>.</p>
+    <table class="payoff-table" style="margin-top:1rem;">
+      <thead><tr><th>Outcome</th><th>Your jail time</th><th>Friend's jail time</th></tr></thead>
+      <tbody>
+        <tr><td>Both confess</td><td>3 years</td><td>4.5 years</td></tr>
+        <tr><td>You confess, friend silent</td><td>1 year</td><td>10 years</td></tr>
+        <tr><td>You silent, friend confesses</td><td>10 years</td><td>4.5 years</td></tr>
+        <tr><td>Both silent</td><td>2 months</td><td>7 years</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:1rem;">Your friend thinks <em>you</em> will confess with probability <span class="mono">1/3</span>.</p>
+    <p><strong>What should you do? And what is the likely outcome?</strong></p>
+  </div>
+  <h3>Your strategy</h3>
+  <div class="choice-grid">
+    <label class="choice-card"><input type="radio" name="q2-strat" value="confess"><span class="choice-icon">🗣</span><span><span class="choice-title">Confess</span><span class="choice-sub">Act defensively; minimise your jail time in either state.</span></span></label>
+    <label class="choice-card"><input type="radio" name="q2-strat" value="silent"><span class="choice-icon">🤐</span><span><span class="choice-title">Stay silent</span><span class="choice-sub">Trust the cooperative outcome.</span></span></label>
+  </div>
+  <h3>Likely outcome</h3>
+  <div class="choice-grid">
+    <label class="choice-card"><input type="radio" name="q2-out" value="both_confess"><span class="choice-icon">⚖</span><span><span class="choice-title">Both confess</span><span class="choice-sub">Defensive logic on both sides.</span></span></label>
+    <label class="choice-card"><input type="radio" name="q2-out" value="you_confess"><span class="choice-icon">↘</span><span><span class="choice-title">You confess, friend silent</span><span class="choice-sub">You exploit their silence.</span></span></label>
+    <label class="choice-card"><input type="radio" name="q2-out" value="friend_confesses"><span class="choice-icon">↙</span><span><span class="choice-title">Friend confesses, you silent</span><span class="choice-sub">They exploit your silence.</span></span></label>
+    <label class="choice-card"><input type="radio" name="q2-out" value="both_silent"><span class="choice-icon">🤝</span><span><span class="choice-title">Both stay silent</span><span class="choice-sub">Mutual cooperation.</span></span></label>
+  </div>
+  <div class="feedback" id="q2-fb"></div>
+  <div class="action-row" id="q2-nav" style="margin-top:1.25rem;">
+    <button class="btn btn-ghost" onclick="navPrev('q2')">← Previous</button>
+    <button class="btn btn-next" onclick="navNext('q2')">Next →</button>
+  </div>
+</div>
+ 
+<!-- Q3: Train Meeting Problem -->
+<div id="page-q3" class="page" style="display:none">
+  <span class="puzzle-label">Section 1 of 3 · Question 3</span>
+  <h1>Question: Two <em>Trains</em></h1>
+  <hr class="divider">
+
+  <div class="problem-card">
+    <p>Two trains start at the same time from two cities that are <strong>300 km apart</strong>.</p>
+
+    <p>They travel directly toward each other.</p>
+
+    <p>Train A travels at <strong>60 km/h</strong> .</p>
+
+    <p>Train B travels at <strong>90 km/h</strong>.</p>
+
+    <p><strong>After how many hours will the two trains meet?</strong></p>
+
+    <p>Enter only the number of hours rounded to 2 decimal units.</p>
+  </div>
+
+  <h3>Your answer</h3>
+
+  <input type="number"
+         id="q3-final-answer"
+         placeholder="Hours"
+         oninput="saveQ3()">
+
+  <div class="feedback" id="q3-fb"></div>
+
+  <div class="action-row" id="q3-nav" style="margin-top:1.25rem;">
+    <button class="btn btn-ghost" onclick="navPrev('q3')">← Previous</button>
+    <button class="btn btn-next" onclick="navNext('q3')" id="q3-next-btn">Next →</button>
+  </div>
+</div>
+<!-- S1Q4: Tripling Money Game -->
+<div id="page-s1q4" class="page" style="display:none">
+  <span class="puzzle-label">Section 1 of 3 · Question</span>
+  <h1>Question: Tripling <em>Money Game</em></h1>
+  <hr class="divider">
+
+  <div class="problem-card">
+    <p>You and your sibling are invested in a scheme that triples your money every round.</p>
+    <p>At each turn, you may either <strong>take all the money</strong> or <strong>pass it on</strong>.</p>
+    <p>After 5 rounds, if the money is passed again, it is split equally between both of you.</p>
+    <p>Assume your sibling thinks similarly to you.</p>
+    <p><em>Example:</em> Start with ₹10. Pass → ₹30. Sibling passes → ₹90. Pass → ₹270, and so on.</p>
+    <p><strong>What do you do on your first turn?</strong></p>
+  </div>
+
+  <h3>Your choice</h3>
+
+  <div class="choice-grid">
+    <label class="choice-card">
+      <input type="radio" name="s1q4-choice" value="take" onchange="saveS1Q4()">
+      <span class="choice-icon">💰</span>
+      <span>
+        <span class="choice-title">Take the money</span>
+        <span class="choice-sub">Stop immediately and keep the current amount.</span>
+      </span>
+    </label>
+
+    <label class="choice-card">
+      <input type="radio" name="s1q4-choice" value="pass" onchange="saveS1Q4()">
+      <span class="choice-icon">🔁</span>
+      <span>
+        <span class="choice-title">Pass it on</span>
+        <span class="choice-sub">Allow the amount to keep tripling.</span>
+      </span>
+    </label>
+  </div>
+
+  <div class="feedback" id="s1q4-fb"></div>
+
+  <div class="action-row" id="s1q4-nav" style="margin-top:1.25rem;">
+    <button class="btn btn-ghost" onclick="navPrev('s1q4')">← Previous</button>
+    <button class="btn btn-next" onclick="navNext('s1q4')">Next →</button>
+  </div>
+</div>
+<!-- S1Q5: Airplane Engine Reliability -->
+<div id="page-s1q5" class="page" style="display:none">
+  <span class="puzzle-label">Section 1 of 3 · Question</span>
+  <h1>Question: Airplane <em>Engine Reliability</em></h1>
+  <hr class="divider">
+
+  <div class="problem-card">
+    <p>An airplane requires at least half of its engines to function in order to operate.</p>
+
+    <p>Each engine functions independently with probability <span class="mono">p</span>.</p>
+
+    <p>The plane fails if more than half of its engines fail.</p>
+
+    <p>Consider a plane with <strong>2 engines</strong> and a plane with <strong>4 engines</strong>.</p>
+
+    <p><strong>At what value of p do both planes have an equal probability of failure?</strong></p>
+
+    <p>Do not consider 0 or 1 as answers. Round your answer to two decimal places.</p>
+  </div>
+
+  <h3>Your answer</h3>
+
+  <input
+    type="number"
+    id="s1q5-answer"
+    min="0"
+    max="1"
+    step="0.1"
+    placeholder="Example: 0.98"
+    oninput="saveS1Q5()"
+  >
+
+  <div class="feedback" id="s1q5-fb"></div>
+
+  <div class="action-row" id="s1q5-nav" style="margin-top:1.25rem;">
+    <button class="btn btn-ghost" onclick="navPrev('s1q5')">← Previous</button>
+    <button class="btn btn-next" onclick="navNext('s1q5')">Next →</button>
+  </div>
+</div>
+<!-- S1Q6: Heads or Tails -->
+<div id="page-s1q6" class="page" style="display:none">
+  <span class="puzzle-label">Section 1 of 3 · Question</span>
+  <h1>Question: Heads or <em>Tails</em></h1>
+  <hr class="divider">
+
+  <div class="problem-card">
+    <p>You and your friend each choose <strong>Heads</strong> or <strong>Tails</strong> simultaneously.</p>
+
+    <p>Your payoff depends on both choices:</p>
+
+    <table class="payoff-table">
+      <thead>
+        <tr>
+          <th>Your choice</th>
+          <th>Friend's choice</th>
+          <th>Your payoff</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Heads</td>
+          <td>Heads</td>
+          <td>₹20</td>
+        </tr>
+        <tr>
+          <td>Heads</td>
+          <td>Tails</td>
+          <td>−₹10</td>
+        </tr>
+        <tr>
+          <td>Tails</td>
+          <td>Heads</td>
+          <td>−₹12</td>
+        </tr>
+        <tr>
+          <td>Tails</td>
+          <td>Tails</td>
+          <td>₹30</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>Your friend chooses Heads with probability <span class="mono">p%</span>.</p>
+
+    <p><strong>At what value of p are you indifferent between choosing Heads and Tails?</strong></p>
+
+    <p>Enter the percentage rounded to one decimal place.</p>
+  </div>
+
+  <h3>Your answer</h3>
+
+  <input
+    type="number"
+    id="s1q6-answer"
+    min="0"
+    max="100"
+    step="0.1"
+    placeholder="Example: 97.3"
+    oninput="saveS1Q6()"
+  >
+
+  <div class="feedback" id="s1q6-fb"></div>
+
+  <div class="action-row" id="s1q6-nav" style="margin-top:1.25rem;">
+    <button class="btn btn-ghost" onclick="navPrev('s1q6')">← Previous</button>
+    <button class="btn btn-next" onclick="navNext('s1q6')">Next →</button>
+  </div>
+</div>
+<!-- Q4: Save Aditi -->
+<div id="page-q4" class="page" style="display:none">
+  <span class="puzzle-label">Section 2 of 3 · Question 4</span>
+  <h1>Question: Save Aditi or <em>Help Yourself</em></h1>
+  <hr class="divider">
+  <div class="problem-card">
+    <p>You and Aditi are both hanging from a tree, in danger of falling.</p>
+    <table class="payoff-table" style="margin:1rem 0;">
+      <thead><tr><th>Your action</th><th>Aditi's response</th><th>Your survival chance</th></tr></thead>
+      <tbody>
+        <tr><td>Pull yourself up</td><td>—</td><td>50%</td></tr>
+        <tr><td rowspan="2">Help Aditi</td><td>She helps you back <span class="mono">(prob 2/3)</span></td><td>75%</td></tr>
+        <tr><td>She doesn't help <span class="mono">(prob 1/3)</span></td><td>30%</td></tr>
+      </tbody>
+    </table>
+    <p><strong>Maximise your probability of survival. What do you do?</strong></p>
+  </div>
+  <h3>Your choice</h3>
+  <div class="choice-grid">
+    <label class="choice-card"><input type="radio" name="q4-strat" value="pull"><span class="choice-icon">🪢</span><span><span class="choice-title">Pull yourself up</span><span class="choice-sub">Fixed 50% survival chance.</span></span></label>
+    <label class="choice-card"><input type="radio" name="q4-strat" value="help"><span class="choice-icon">🤲</span><span><span class="choice-title">Help Aditi</span><span class="choice-sub">Risk depends on whether she helps back.</span></span></label>
+  </div>
+  <div class="feedback" id="q4-fb"></div>
+  <div class="action-row" id="q4-nav" style="margin-top:1.25rem;">
+    <button class="btn btn-ghost" onclick="navPrev('q4')">← Previous</button>
+    <button class="btn btn-next" onclick="navNext('q4')">Next →</button>
+  </div>
+</div>
+ 
+<!-- Q5: Survivor -->
+<div id="page-q5" class="page" style="display:none">
+  <span class="puzzle-label">Section 2 of 3 · Question 5</span>
+  <h1>Question: Position of <em>the Survivor</em></h1>
+  <hr class="divider">
+  <div class="problem-card">
+    <p>There are <strong>53 people</strong> in a line, numbered 1 to 53. You may choose any position.</p>
+    <p>A dictator runs elimination rounds using a repeating sequence:</p>
+    <p style="text-align:center;font-family:'Courier New',Courier,monospace;color:var(--accent);margin:0.75rem 0;">4, 2, 3, 4, 2, 3, 4, 2, 3, …</p>
+    <p>In a round with value <span class="mono">N</span>, every <span class="mono">N</span>-th person survives and everyone else is eliminated.</p>
+    <p><em>Worked example:</em> If 10 people remain and the round value is <span class="mono">3</span>, then positions 3, 6, and 9 survive into the next round.</p>
+    <p>If the round value is larger than the number of remaining people, that round is skipped.</p>
+    <p>The process continues until <strong>one person remains</strong>.</p>
+    <p style="margin-top:1rem;"><strong>Which starting position guarantees survival?</strong></p>
+  </div>
+  <h3>Your answer</h3>
+  <div class="visual-input-panel">
+    <input type="number" id="q5-ans" min="1" max="53" placeholder="1 – 53" style="display:none">
+    <div class="position-grid" id="q5-grid"></div>
+    <div class="builder-summary" id="q5-summary">Tap one starting position.</div>
+  </div>
+  <div class="feedback" id="q5-fb"></div>
+  <div class="action-row" id="q5-nav" style="margin-top:1.25rem;">
+    <button class="btn btn-ghost" onclick="navPrev('q5')">← Previous</button>
+    <button class="btn btn-next" onclick="navNext('q5')">Next →</button>
+  </div>
+</div>
+ 
+<!-- Q6: Staircase -->
+<div id="page-q6" class="page" style="display:none">
+  <span class="puzzle-label">Section 2 of 3 · Question 6</span>
+  <h1>Question: Climbing a <em>Staircase</em></h1>
+  <hr class="divider">
+  <div class="problem-card">
+    <p>You must climb a staircase with <strong>20 steps</strong>. Each move goes up <em>one</em> or <em>two steps</em>. Final step must land on <strong>step 19 or 20</strong>.</p>
+    <p style="margin-top:0.75rem;">Step costs (stack multiplicatively):</p>
+    <table class="payoff-table" style="margin:0.75rem 0;">
+      <thead><tr><th>Rule</th><th>Cost</th></tr></thead>
+      <tbody>
+        <tr><td>Prime number steps (step 1 counts as prime)</td><td>$1</td></tr>
+        <tr><td>Even number steps</td><td>$4</td></tr>
+        <tr><td>Multiples of 3</td><td>$9</td></tr>
+        <tr><td>Multiples of 5</td><td>$25</td></tr>
+      </tbody>
+    </table>
+    <p><em>Example:</em> Step 6 = even × mult-of-3 = $4 × $9 = <span class="mono">$36</span>. Step 10 = even × mult-of-5 = $4 × $25 = <span class="mono">$100</span> </p>
+    <p style="margin-top:0.75rem;"><strong>Enter the step numbers you land on (comma-separated).</strong></p>
+  </div>
+  <h3>Your sequence</h3>
+  <div class="visual-input-panel">
+    <input type="text" id="q6-ans" placeholder="e.g. 1, 3, 5, 7 …" style="display:none">
+    <div class="step-grid" id="q6-grid"></div>
+    <div class="builder-summary" id="q6-summary">Tap steps in your chosen path. Tap again to remove.</div>
+  </div>
+  <button class="btn btn-ghost" onclick="clearQ6Path()">Clear Path</button>
+  <div class="feedback" id="q6-fb"></div>
+  <div class="action-row" id="q6-nav" style="margin-top:1.25rem;">
+    <button class="btn btn-ghost" onclick="navPrev('q6')">← Previous</button>
+    <button class="btn btn-next" onclick="navNext('q6')" id="q6-next-btn">Next →</button>
+  </div>
+</div>
+ <!-- S2Q4: Cow Stall Arrangement -->
+<div id="page-s2q4" class="page" style="display:none">
+  <span class="puzzle-label">Section 2 of 3 · Question</span>
+  <h1>Question: Cow Stall <em>Arrangement</em></h1>
+  <hr class="divider">
+
+  <div class="problem-card">
+    <p>There are <strong>11 stalls</strong> in a row.</p>
+
+    <p>Arrange 10 cows and leave exactly one stall empty.</p>
+
+    <table class="payoff-table">
+      <thead>
+        <tr>
+          <th>Breed</th>
+          <th>Number of cows</th>
+          <th>Aggression probability</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Breed A</td><td>3</td><td>60%</td></tr>
+        <tr><td>Breed B</td><td>5</td><td>30%</td></tr>
+        <tr><td>Breed C</td><td>2</td><td>10%</td></tr>
+      </tbody>
+    </table>
+
+    <p>Your goal is to minimise the probability of two aggressive cows being adjacent.</p>
+
+    <p>
+      Use <span class="mono">A</span>,
+      <span class="mono">B</span>,
+      <span class="mono">C</span>, and
+      <span class="mono">_</span> for the empty stall.
+    </p>
+
+    <p>Separate each stall with a space.</p>
+  </div>
+
+  <h3>Your arrangement</h3>
+
+  <input
+    type="text"
+    id="s2q4-answer"
+    placeholder="Example: A B C _ A B C A B B B"
+    oninput="saveS2Q4()"
+  >
+
+  <div class="feedback" id="s2q4-fb"></div>
+
+  <div class="action-row" id="s2q4-nav" style="margin-top:1.25rem;">
+    <button class="btn btn-ghost" onclick="navPrev('s2q4')">← Previous</button>
+    <button class="btn btn-next" onclick="navNext('s2q4')">Next →</button>
+  </div>
+</div>
+<!-- S2Q5: Airplane Seating -->
+<div id="page-s2q5" class="page" style="display:none">
+  <span class="puzzle-label">Section 2 of 3 · Question</span>
+  <h1>Question: Airplane <em>Seating</em></h1>
+  <hr class="divider">
+
+  <div class="problem-card">
+    <p>There are <strong>100 people</strong> waiting to board a plane with 100 assigned seats.</p>
+
+    <p>
+      The first passenger, Alice, has lost her boarding pass and chooses a seat
+      uniformly at random.
+    </p>
+
+    <p>
+      Every passenger after her sits in their assigned seat if it is available.
+      If it is occupied, that passenger chooses randomly from the remaining seats.
+    </p>
+
+    <p>
+      <strong>
+        What is the probability that the final passenger sits in their assigned seat?
+      </strong>
+    </p>
+
+    <p>Round your answer to two decimal places.</p>
+  </div>
+
+  <h3>Your answer</h3>
+
+  <input
+    type="number"
+    id="s2q5-answer"
+    min="0"
+    max="1"
+    step="0.01"
+    placeholder="Example: 0.79"
+    oninput="saveS2Q5()"
+  >
+
+  <div class="feedback" id="s2q5-fb"></div>
+
+  <div class="action-row" id="s2q5-nav" style="margin-top:1.25rem;">
+    <button class="btn btn-ghost" onclick="navPrev('s2q5')">← Previous</button>
+    <button class="btn btn-next" onclick="navNext('s2q5')">Next →</button>
+  </div>
+</div>
+<!-- S2Q6: Largest Power of 12 -->
+<div id="page-s2q6" class="page" style="display:none">
+  <span class="puzzle-label">Section 2 of 3 · Question</span>
+  <h1>Question: Largest Power of <em>12</em></h1>
+  <hr class="divider">
+
+  <div class="problem-card">
+    <p>
+      What is the largest power of <strong>12</strong> that divides
+      <strong>100!</strong>?
+    </p>
+
+    <p>
+      In other words, find the largest integer
+      <span class="mono">k</span> such that
+      <span class="mono">12ᵏ</span> divides
+      <span class="mono">100!</span>.
+    </p>
+
+    <p>Enter only the value of <span class="mono">k</span>.</p>
+  </div>
+
+  <h3>Your answer</h3>
+
+  <input
+    type="number"
+    id="s2q6-answer"
+    min="0"
+    step="1"
+    placeholder="Enter an integer"
+    oninput="saveS2Q6()"
+  >
+
+  <div class="feedback" id="s2q6-fb"></div>
+
+  <div class="action-row" id="s2q6-nav" style="margin-top:1.25rem;">
+    <button class="btn btn-ghost" onclick="navPrev('s2q6')">← Previous</button>
+    <button class="btn btn-next" onclick="navNext('s2q6')">Next →</button>
+  </div>
+</div>
+<!-- Q7: Easy Python Algorithm -->
+<div id="page-q7" class="page" style="display:none">
+  <span class="puzzle-label">Section 3 of 3 · Question 7</span>
+  <h1>Question: Python <em>Algorithm Task</em></h1>
+  <hr class="divider">
+
+  <div class="problem-card">
+    <p>A list named <span class="mono">numbers</span> has already been loaded for you.</p>
+    <p>Find the <strong>second largest unique number</strong> in the list.</p>
+    <p>Use Python code to calculate the answer.</p>
+    <p>Enter only the final number.</p>
+  </div>
+
+  <h3>Python Quick Reference</h3>
+  <div style="background:#f8fafc;border:1px solid #d1d5db;border-radius:8px;padding:12px;margin-top:10px;">
+<pre style="margin:0;font-size:0.85rem;white-space:pre-wrap;">
+sorted(data)
+Returns a sorted list.
+
+set(data)
+Removes duplicate values.
+
+max(data)
+Returns the largest value.
+
+len(data)
+Returns the number of items.
+
+print(value)
+Displays output.
+</pre>
+  </div>
+
+  <h3>Python code</h3>
+  <div class="visual-input-panel">
+    <textarea id="q7-code" spellcheck="false" placeholder="Write Python code here..."
+      style="width:100%;height:230px;font-family:'Courier New',Courier,monospace;font-size:0.9rem;padding:0.75rem;border:1px solid var(--border-strong);border-radius:var(--radius-md);resize:vertical;"></textarea>
+
+    <div class="action-row">
+      <button class="btn btn-primary" type="button" onclick="runQ7Python()">Run Python</button>
+    </div>
+
+    <h3>Output</h3>
+    <pre id="q7-output"
+      style="background:#0f172a;color:#e5e7eb;padding:0.85rem;border-radius:var(--radius-md);min-height:90px;max-height:220px;overflow-y:auto;white-space:pre-wrap;font-family:'Courier New',Courier,monospace;font-size:0.85rem;">Output will appear here.</pre>
+  </div>
+
+  <h3>Final answer</h3>
+  <input type="number" id="q7-final-answer" placeholder="Enter final number" oninput="saveQ7()">
+
+  <div class="feedback" id="q7-fb"></div>
+
+  <div class="action-row" id="q7-nav" style="margin-top:1.25rem;">
+    <button class="btn btn-ghost" onclick="navPrev('q7')">← Previous</button>
+    <button class="btn btn-next" onclick="navNext('q7')">Next →</button>
+  </div>
+</div>
+ 
+<!-- Q8: Python Dataset Question -->
+<div id="page-q8" class="page" style="display:none">
+  <span class="puzzle-label">Section 3 of 3 · Question 8</span>
+  <h1>Question: Python <em>Data Analysis Task</em></h1>
+  <hr class="divider">
+
+  <div class="problem-card">
+    <p>A pandas DataFrame called <span class="mono">df</span> has already been loaded for you.</p>
+
+    <p>The DataFrame contains the columns:</p>
+
+    <ul style="margin-left:20px;">
+      <li>Product</li>
+      <li>Region</li>
+      <li>Month</li>
+      <li>Revenue</li>
+    </ul>
+
+    <p>For each region, calculate the <strong>average revenue</strong>.</p>
+
+    <p>Identify the region with the <strong>highest average revenue</strong>.</p>
+
+    <p>Use Python code to calculate the answer.</p>
+
+    <p>Enter only the region name.</p>
+  </div>
+
+  <hr class="divider">
+
+  <h3>Python Quick Reference</h3>
+
+  <div style="background:#f8fafc;border:1px solid #d1d5db;border-radius:8px;padding:12px;margin-top:10px;max-height:350px;overflow-y:auto;">
+<pre style="margin:0;font-size:0.85rem;white-space:pre-wrap;">
+PANDAS QUICK REFERENCE
+
+df.head(n)
+Returns the first n rows of the DataFrame.
+
+df.tail(n)
+Returns the last n rows.
+
+df.columns
+Returns column names.
+
+df.shape
+Returns (rows, columns).
+
+len(df)
+Returns number of rows.
+
+--------------------------------------------------
+
+FILTERING
+
+df[df["Column"] == value]
+
+--------------------------------------------------
+
+SORTING
+
+df.sort_values("Column")
+
+df.sort_values("Column", ascending=False)
+
+--------------------------------------------------
+
+AGGREGATE FUNCTIONS
+
+df["Column"].max()
+
+df["Column"].min()
+
+df["Column"].mean()
+
+df["Column"].sum()
+
+df["Column"].count()
+
+--------------------------------------------------
+
+GROUP BY
+
+df.groupby("Column")
+
+df.groupby("Column")["Value"]
+
+df.groupby("Column")["Value"].max()
+
+df.groupby("Column")["Value"].min()
+
+df.groupby("Column")["Value"].mean()
+
+df.groupby("Column")["Value"].sum()
+
+--------------------------------------------------
+
+PIVOT TABLE
+
+pd.pivot_table(
+    data,
+    values="Column",
+    index="Column",
+    columns="Column",
+    aggfunc="sum"
+)
+
+--------------------------------------------------
+
+JOIN / MERGE
+
+pd.merge(df1, df2, on="Column")
+
+--------------------------------------------------
+
+UNIQUE VALUES
+
+df["Column"].unique()
+
+df["Column"].nunique()
+
+--------------------------------------------------
+
+TOP / BOTTOM ROWS
+
+df.nlargest(n, "Column")
+
+df.nsmallest(n, "Column")
+
+--------------------------------------------------
+
+ROW WITH MAXIMUM VALUE
+
+df.loc[df["Column"].idxmax()]
+
+--------------------------------------------------
+
+PRINTING OUTPUT
+
+print(value)
+</pre>
+  </div>
+
+  <h3>Python code</h3>
+
+  <div class="visual-input-panel">
+    <textarea id="q8-code"
+      spellcheck="false"
+      placeholder="Write Python code here..."
+      style="width:100%;height:230px;font-family:'Courier New',Courier,monospace;font-size:0.9rem;padding:0.75rem;border:1px solid var(--border-strong);border-radius:var(--radius-md);resize:vertical;"></textarea>
+
+    <div class="action-row">
+      <button class="btn btn-primary" type="button" onclick="runQ8Python()">
+        Run Python
+      </button>
+    </div>
+
+    <h3>Output</h3>
+
+    <pre id="q8-output"
+      style="background:#0f172a;color:#e5e7eb;padding:0.85rem;border-radius:var(--radius-md);min-height:90px;max-height:220px;overflow-y:auto;white-space:pre-wrap;font-family:'Courier New',Courier,monospace;font-size:0.85rem;">Output will appear here.</pre>
+  </div>
+
+  <h3>Final answer</h3>
+
+  <input type="text"
+         id="q8-final-answer"
+         placeholder="Region name"
+         oninput="saveQ8()">
+
+  <div class="feedback" id="q8-fb"></div>
+
+  <div class="action-row" id="q8-nav" style="margin-top:1.25rem;">
+    <button class="btn btn-ghost" onclick="navPrev('q8')">← Previous</button>
+    <button class="btn btn-next" onclick="navNext('q8')">Next →</button>
+  </div>
+</div>
+
+
+<div id="page-q9" class="page" style="display:none">
+  <span class="puzzle-label">Section 3 of 3 · Question 9</span>
+  <h1>Question: Python <em>Coding Task</em></h1>
+  <hr class="divider">
+
+  <div class="problem-card">
+    <p>A pandas DataFrame called <span class="mono">df</span> has already been loaded for you.</p>
+
+    <p>The DataFrame contains the columns:</p>
+
+    <ul style="margin-left:20px;">
+      <li>Student</li>
+      <li>Subject</li>
+      <li>Score</li>
+    </ul>
+
+    <p>For each student, find their highest score.</p>
+
+    <p>Then identify the student and subject corresponding to the <strong>second highest</strong> of those student-wise maximum scores.</p>
+
+    <p>Use Python code to calculate the answer.</p>
+
+    <p>Enter your final answer in the format:</p>
+
+    <p><span class="mono">Student, Subject</span></p>
+  </div>
+
+  <hr class="divider">
+
+  <h3>Python Quick Reference</h3>
+
+  <div style="background:#f8fafc;border:1px solid #d1d5db;border-radius:8px;padding:12px;margin-top:10px;max-height:350px;overflow-y:auto;">
+
+<pre style="margin:0;font-size:0.85rem;white-space:pre-wrap;">
+PANDAS QUICK REFERENCE
+
+df.head(n)
+Returns the first n rows of the DataFrame.
+Useful for inspecting data.
+
+df.tail(n)
+Returns the last n rows of the DataFrame.
+
+df.columns
+Returns all column names.
+
+df.shape
+Returns (number_of_rows, number_of_columns).
+
+len(df)
+Returns the number of rows.
+
+--------------------------------------------------
+
+FILTERING
+
+df[df["Column"] == value]
+Returns rows matching a condition.
+
+df[df["Score"] > 90]
+Returns rows where Score is greater than 90.
+
+--------------------------------------------------
+
+SORTING
+
+df.sort_values("Column")
+Sorts rows in ascending order.
+
+df.sort_values("Column", ascending=False)
+Sorts rows in descending order.
+
+--------------------------------------------------
+
+AGGREGATE FUNCTIONS
+
+df["Column"].max()
+Returns the maximum value.
+
+df["Column"].min()
+Returns the minimum value.
+
+df["Column"].mean()
+Returns the average.
+
+df["Column"].sum()
+Returns the sum.
+
+df["Column"].count()
+Returns the number of non-null values.
+
+--------------------------------------------------
+
+GROUP BY
+
+df.groupby("Column")
+Groups rows by a column.
+
+df.groupby("Column")["Value"]
+Selects a column after grouping.
+
+df.groupby("Column")["Value"].max()
+Returns the maximum value within each group.
+
+df.groupby("Column")["Value"].min()
+Returns the minimum value within each group.
+
+df.groupby("Column")["Value"].mean()
+Returns the average value within each group.
+
+df.groupby("Column")["Value"].sum()
+Returns the total value within each group.
+
+--------------------------------------------------
+
+MULTIPLE AGGREGATIONS
+
+df.groupby("Column").agg({
+    "Value": ["min", "max", "mean"]
+})
+
+Computes multiple statistics simultaneously.
+
+--------------------------------------------------
+
+PIVOT TABLE
+
+pd.pivot_table(
+    data,
+    values="Column",
+    index="Column",
+    columns="Column",
+    aggfunc="sum"
+)
+
+Creates a summary table.
+
+Common aggfunc values:
+sum
+mean
+count
+min
+max
+
+--------------------------------------------------
+
+JOIN / MERGE
+
+pd.merge(df1, df2, on="Column")
+
+Combines two DataFrames using a common column.
+
+Common join types:
+
+pd.merge(df1, df2, on="ID", how="inner")
+Only matching rows.
+
+pd.merge(df1, df2, on="ID", how="left")
+All rows from left table.
+
+pd.merge(df1, df2, on="ID", how="right")
+All rows from right table.
+
+pd.merge(df1, df2, on="ID", how="outer")
+All rows from both tables.
+
+--------------------------------------------------
+
+UNIQUE VALUES
+
+df["Column"].unique()
+Returns distinct values.
+
+df["Column"].nunique()
+Returns the number of distinct values.
+
+--------------------------------------------------
+
+TOP / BOTTOM ROWS
+
+df.nlargest(n, "Column")
+Returns the n rows with largest values.
+
+df.nsmallest(n, "Column")
+Returns the n rows with smallest values.
+
+--------------------------------------------------
+
+ROW WITH MAXIMUM VALUE
+
+df.loc[df["Column"].idxmax()]
+
+Returns the entire row containing the maximum value.
+
+ROW WITH MINIMUM VALUE
+
+df.loc[df["Column"].idxmin()]
+
+Returns the entire row containing the minimum value.
+
+--------------------------------------------------
+
+WINDOW / PARTITION STYLE OPERATIONS
+
+df.groupby("Column")["Value"].transform("max")
+
+Returns each row together with the maximum value in its group.
+
+Equivalent to:
+MAX(Value) OVER(PARTITION BY Column)
+
+--------------------------------------------------
+
+RANKING WITHIN GROUPS
+
+df.groupby("Group")["Value"].rank()
+
+Assigns a rank inside each group.
+
+Useful for:
+Top scorer per team
+Highest salary per department
+Best product per category
+
+--------------------------------------------------
+
+PRINTING OUTPUT
+
+print(value)
+
+Displays output to the user.
+</pre>
+
+  </div>
+
+  <h3>Python code</h3>
+
+  <div class="visual-input-panel">
+    <textarea id="q9-code"
+      spellcheck="false"
+      placeholder="Write Python code here..."
+      style="width:100%;height:230px;font-family:'Courier New',Courier,monospace;font-size:0.9rem;padding:0.75rem;border:1px solid var(--border-strong);border-radius:var(--radius-md);resize:vertical;"></textarea>
+
+    <div class="action-row">
+      <button class="btn btn-primary" type="button" onclick="runQ9Python()">
+        Run Python
+      </button>
+    </div>
+
+    <h3>Output</h3>
+
+    <pre id="q9-output"
+      style="background:#0f172a;color:#e5e7eb;padding:0.85rem;border-radius:var(--radius-md);min-height:90px;max-height:220px;overflow-y:auto;white-space:pre-wrap;font-family:'Courier New',Courier,monospace;font-size:0.85rem;">Output will appear here.</pre>
+  </div>
+
+  <h3>Final answer</h3>
+
+  <input type="text"
+         id="q9-final-answer"
+         placeholder="Student, Subject"
+         oninput="saveQ9()">
+
+  <div class="feedback" id="q9-fb"></div>
+
+  <div class="action-row" id="q9-nav" style="margin-top:1.25rem;">
+    <button class="btn btn-ghost" onclick="navPrev('q9')">← Previous</button>
+    <button class="btn btn-next" onclick="navNext('q9')">Submit Section →</button>
+  </div>
+</div>
+
+
+ 
+<!-- RESULTS -->
+<div id="page-results" class="page" style="display:none;text-align:center;">
+  <span class="completion-icon">🏆</span>
+  <span class="puzzle-label">Assessment Complete</span>
+  <h1>Assessment <em>Results</em></h1>
+  <hr class="divider" style="max-width:200px;margin:1.5rem auto;">
+  <p style="color:var(--muted);max-width:460px;margin:0 auto 1rem;">
+  You have completed the assessment. Your final score is shown below.
+</p>
+  <div class="score-badge" id="scoreBadge">— / 9</div>
+  <p id="scoreComment" style="color:var(--muted);margin-bottom:2.5rem;font-size:1rem;"></p>
+  <div style="text-align:left;max-width:680px;margin:0 auto;" id="reviewSection"></div>
+</div>
+ 
+<!-- ══════════════════════════════════════════ SCRIPTS ══════════════════════════════════════════ -->
+<script>
+// ── Q7 LIMITS (must be defined before initVisualControls runs) ──
+const Q7_LIMITS = { A:3, B:5, C:2, '_':1 };
+
+
+// ── VISUAL SELECTION SYNC FOR CHOICE CARDS ──
+function syncChoiceCardSelection() {
+  document.querySelectorAll('.choice-grid').forEach(grid => {
+    grid.querySelectorAll('.choice-card').forEach(card => {
+      const input = card.querySelector('input[type="radio"]');
+      if (!input) return;
+      card.classList.toggle('selected', input.checked);
+    });
+  });
+}
+document.addEventListener('change', function(e) {
+  if (e.target && e.target.matches('.choice-card input[type="radio"]')) {
+    syncChoiceCardSelection();
+  }
+});
+document.addEventListener('click', function(e) {
+  const card = e.target.closest && e.target.closest('.choice-card');
+  if (!card) return;
+  const input = card.querySelector('input[type="radio"]');
+  if (input) {
+    input.checked = true;
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+    syncChoiceCardSelection();
+  }
+});
+
+// ── SECTIONS & ROUTER ──
+const progress = { home:0, q1:11, q2:22, q3:33, q4:44, q5:55, q6:66, q7:77, q8:88, q9:100, results:100 };
+let currentPage = 'home';
+const qPages = [
+  'q1',
+  'q2',
+  'q3',
+  's1q4',
+  's1q5',
+  's1q6',
+
+  'q4',
+  'q5',
+  'q6',
+  's2q4',
+  's2q5',
+  's2q6',
+
+  'q7',
+  'q8',
+  'q9'
+];
+function getActiveQuestions() {
+  return SECTIONS.flatMap(section => section.questions);
+}
+let assessmentStarted = false;
+let assessmentStartTime = null;
+let section1Start = null;
+let section2Start = null;
+let section3Start = null;
+
+let section1Time = 0;
+let section2Time = 0;
+let section3Time = 0;
+let tabWarningCount = Number("{{ warning_count|default(0) }}");
+let tabAlreadyTriggered = false;
+
+// Section definitions
+let SECTIONS = [
+  { id: 1, name: 'Section 1', questions: ['q1','q2','q3'], duration: 20 * 60, label: 'Q1 – Q3' },
+  { id: 2, name: 'Section 2', questions: ['q4','q5','q6'], duration: 30 * 60, label: 'Q4 – Q6' },
+  { id: 3, name: 'Section 3', questions: ['q7','q8','q9'], duration: 20 * 60, label: 'Q7 – Q9' },
+];
+function shuffleArray(arr) {
+  const copy = [...arr];
+
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+
+  return copy;
+}
+function randomizeSections() {
+
+  const userOrderKey =
+    "section_question_order_v3_{{ session.get('user_id', 'anonymous') }}"
+
+  const savedOrder = localStorage.getItem(userOrderKey);
+
+  if (savedOrder) {
+    const parsed = JSON.parse(savedOrder);
+
+    SECTIONS[0].questions = parsed.section1;
+    SECTIONS[1].questions = parsed.section2;
+    return;
+  }
+
+  const section1 = shuffleArray([
+  'q1',
+  'q2',
+  'q3',
+  's1q4',
+  's1q5',
+  's1q6'
+]).slice(0, 3);
+  const section2 = shuffleArray([
+  'q4',
+  'q5',
+  'q6',
+  's2q4',
+  's2q5',
+  's2q6'
+]).slice(0, 3);
+
+  SECTIONS[0].questions = section1;
+  SECTIONS[1].questions = section2;
+
+  localStorage.setItem(userOrderKey, JSON.stringify({
+    section1,
+    section2
+  }));
+}
+let currentSection = null;   // index 0/1/2
+let sectionTimerInterval = null;
+let sectionTimeLeft = 0;
+
+function getSectionForQ(q) {
+  return SECTIONS.findIndex(s => s.questions.includes(q));
+}
+function isQuestionPage(page) { return qPages.includes(page); }
+
+function goTo(page) {
+  if (assessmentStarted && page === 'home' && currentPage !== 'results') {
+    showLockOverlay();
+    return;
+  }
+
+  document.getElementById('page-' + currentPage).style.display = 'none';
+
+  currentPage = page;
+
+  const el = document.getElementById('page-' + page);
+
+  el.style.display = 'block';
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = '';
+
+  document.getElementById('progressBar').style.width =
+    (progress[page] || 0) + '%';
+
+  window.scrollTo(0, 0);
+
+  if (page === 'results') {
+
+    const now = Date.now();
+
+    if (currentSection === 0 && section1Start) {
+      section1Time += Math.floor((now - section1Start) / 1000);
+      section1Start = null;
+    }
+
+    if (currentSection === 1 && section2Start) {
+      section2Time += Math.floor((now - section2Start) / 1000);
+      section2Start = null;
+    }
+
+    if (currentSection === 2 && section3Start) {
+      section3Time += Math.floor((now - section3Start) / 1000);
+      section3Start = null;
+    }
+
+    hideNavigator();
+    buildResults();
+    resetGameStateOnly();
+
+    assessmentStarted = false;
+
+    stopSectionTimer();
+
+    hideNavigator();
+
+  } else if (isQuestionPage(page)) {
+
+    assessmentStarted = true;
+
+    if (!assessmentStartTime) {
+      assessmentStartTime = Date.now();
+    }
+
+    const newSec = getSectionForQ(page);
+
+    if (newSec !== currentSection) {
+
+      const now = Date.now();
+
+      if (currentSection === 0 && section1Start) {
+        section1Time += Math.floor((now - section1Start) / 1000);
+        section1Start = null;
+      }
+
+      if (currentSection === 1 && section2Start) {
+        section2Time += Math.floor((now - section2Start) / 1000);
+        section2Start = null;
+      }
+
+      if (currentSection === 2 && section3Start) {
+        section3Time += Math.floor((now - section3Start) / 1000);
+        section3Start = null;
+      }
+
+      currentSection = newSec;
+
+      if (currentSection === 0) {
+        section1Start = now;
+      }
+
+      if (currentSection === 1) {
+        section2Start = now;
+      }
+
+      if (currentSection === 2) {
+        section3Start = now;
+      }
+
+      startSectionTimer(SECTIONS[currentSection].duration);
+      startSectionMicroClipScheduler(currentSection);
+    }
+
+    showNavigator();
+    renderNavGrid();
+
+    const formData = new FormData();
+    formData.append("current_page", page);
+
+    fetch("/save_progress", {
+      method: "POST",
+      body: formData
+    });
+  }
+
+  initVisualControls();
+  syncChoiceCardSelection();
+}
+let screenStream = null;
+let webcamStream = null;
+
+// Distributed micro-clip proctoring: webcam + microphone only.
+// Each section can store at most 45 seconds total: 9 clips × 5 seconds.
+// Clips are scheduled at spread-out, partly random points during the section.
+// If a candidate submits before any clip is captured, one 5-second fallback clip is recorded.
+let proctorClipRecorder = null;
+let proctorClipChunks = [];
+let proctorClipPromise = null;
+let proctorClipInProgress = false;
+let proctorClipTimers = [];
+let sectionProctorClips = {};
+let currentProctorSection = null;
+let uploadedSectionRecordings = new Set();
+let assessmentSubmitting = false;
+
+const MICRO_CLIP_MS = 5000;
+const MAX_MICRO_CLIPS_PER_SECTION = 9;
+
+function randomBetween(min, max) {
+  if (max <= min) return min;
+  return min + Math.floor(Math.random() * (max - min));
+}
+
+async function uploadRecordingBlob(blob, type) {
+  if (!blob || blob.size === 0) {
+    console.warn("No recording blob to upload for", type);
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("type", type);
+  formData.append("video", blob, type + ".webm");
+
+  const response = await fetch("/upload_recording", {
+    method: "POST",
+    body: formData
+  });
+
+  if (!response.ok) {
+    throw new Error(type + " recording upload failed");
+  }
+
+  console.log(type + " recording uploaded");
+}
+
+function getRecorderOptions() {
+  const options = {
+    videoBitsPerSecond: 300000,
+    audioBitsPerSecond: 32000
+  };
+
+  if (window.MediaRecorder && MediaRecorder.isTypeSupported("video/webm;codecs=vp8,opus")) {
+    options.mimeType = "video/webm;codecs=vp8,opus";
+  } else if (window.MediaRecorder && MediaRecorder.isTypeSupported("video/webm")) {
+    options.mimeType = "video/webm";
+  }
+
+  return options;
+}
+
+function clearProctorClipTimers() {
+  proctorClipTimers.forEach(timer => clearTimeout(timer));
+  proctorClipTimers = [];
+}
+
+function startSectionMicroClipScheduler(sectionIndex) {
+  if (!webcamStream) return;
+
+  clearProctorClipTimers();
+
+  currentProctorSection = sectionIndex;
+  sectionProctorClips[sectionIndex] = [];
+
+  const sectionDurationMs = SECTIONS[sectionIndex].duration * 1000;
+  const latestStartMs = Math.max(0, sectionDurationMs - MICRO_CLIP_MS);
+
+  for (let i = 0; i < MAX_MICRO_CLIPS_PER_SECTION; i++) {
+    let delay;
+
+    if (i === 0) {
+      // Ensure one early opportunity, while still not being exactly predictable.
+      delay = randomBetween(5000, Math.min(15000, latestStartMs));
+    } else {
+      // Spread remaining clips across the rest of the section.
+      const remainingStartMs = Math.min(15000, latestStartMs);
+      const remainingDurationMs = Math.max(0, latestStartMs - remainingStartMs);
+      const windowSizeMs = remainingDurationMs / (MAX_MICRO_CLIPS_PER_SECTION - 1);
+      const windowStartMs = remainingStartMs + ((i - 1) * windowSizeMs);
+      const windowEndMs = remainingStartMs + (i * windowSizeMs);
+      delay = randomBetween(windowStartMs, Math.max(windowStartMs, windowEndMs - MICRO_CLIP_MS));
+    }
+
+    delay = Math.max(0, Math.min(delay, latestStartMs));
+
+    const timer = setTimeout(() => {
+      recordMicroClip(sectionIndex).catch(err => {
+        console.warn("Micro proctor clip failed:", err);
+      });
+    }, delay);
+
+    proctorClipTimers.push(timer);
+  }
+
+  console.log("Scheduled micro-clips for section", sectionIndex + 1);
+}
+
+function recordMicroClip(sectionIndex, force = false) {
+  if (!webcamStream) return Promise.resolve(null);
+
+  if (!force) {
+    if (assessmentSubmitting) return Promise.resolve(null);
+    if (sectionIndex !== currentProctorSection) return Promise.resolve(null);
+    if ((sectionProctorClips[sectionIndex] || []).length >= MAX_MICRO_CLIPS_PER_SECTION) {
+      return Promise.resolve(null);
+    }
+  }
+
+  if (proctorClipInProgress) {
+    return proctorClipPromise || Promise.resolve(null);
+  }
+
+  proctorClipInProgress = true;
+  proctorClipChunks = [];
+
+  try {
+    proctorClipRecorder = new MediaRecorder(webcamStream, getRecorderOptions());
+  } catch (err) {
+    console.error("Could not start micro proctor recorder:", err);
+    proctorClipInProgress = false;
+    proctorClipRecorder = null;
+    return Promise.resolve(null);
+  }
+
+  proctorClipPromise = new Promise((resolve) => {
+    proctorClipRecorder.ondataavailable = function(e) {
+      if (e.data && e.data.size > 0) {
+        proctorClipChunks.push(e.data);
+      }
+    };
+
+    proctorClipRecorder.onstop = function() {
+      const blob = new Blob(proctorClipChunks, { type: proctorClipRecorder.mimeType || "video/webm" });
+
+      if (blob && blob.size > 0) {
+        if (!sectionProctorClips[sectionIndex]) {
+          sectionProctorClips[sectionIndex] = [];
+        }
+
+        if (sectionProctorClips[sectionIndex].length < MAX_MICRO_CLIPS_PER_SECTION) {
+          sectionProctorClips[sectionIndex].push(blob);
+        }
+      }
+
+      proctorClipInProgress = false;
+      proctorClipRecorder = null;
+      proctorClipChunks = [];
+      proctorClipPromise = null;
+      resolve(blob);
+    };
+  });
+
+  try {
+    proctorClipRecorder.start();
+  } catch (err) {
+    console.error("Could not start micro proctor recorder:", err);
+    proctorClipInProgress = false;
+    proctorClipRecorder = null;
+    proctorClipPromise = null;
+    return Promise.resolve(null);
+  }
+
+  setTimeout(() => {
+    if (proctorClipRecorder && proctorClipRecorder.state !== "inactive") {
+      try {
+        proctorClipRecorder.requestData();
+      } catch (err) {
+        console.warn("Could not request micro clip data:", err);
+      }
+
+      try {
+        proctorClipRecorder.stop();
+      } catch (err) {
+        console.warn("Could not stop micro clip recorder:", err);
+        proctorClipInProgress = false;
+      }
+    }
+  }, MICRO_CLIP_MS);
+
+  return proctorClipPromise;
+}
+
+async function waitForActiveMicroClip() {
+  if (!proctorClipInProgress) return;
+
+  // Wait slightly longer than the 5-second clip window.
+  await new Promise(resolve => setTimeout(resolve, MICRO_CLIP_MS + 700));
+}
+
+async function uploadCurrentSectionRecording() {
+  if (currentProctorSection === null || currentProctorSection === undefined) {
+    return;
+  }
+
+  const sectionIndex = currentProctorSection;
+
+  if (uploadedSectionRecordings.has(sectionIndex)) {
+    return;
+  }
+
+  clearProctorClipTimers();
+
+  if (proctorClipInProgress) {
+    await waitForActiveMicroClip();
+  }
+
+  if (!sectionProctorClips[sectionIndex]) {
+    sectionProctorClips[sectionIndex] = [];
+  }
+
+  // If the user finishes too quickly and no scheduled clip fired yet,
+  // capture one short fallback clip during the submit overlay.
+  if (sectionProctorClips[sectionIndex].length === 0) {
+    await recordMicroClip(sectionIndex, true);
+  }
+
+  const clipsToUpload = sectionProctorClips[sectionIndex].slice(0, MAX_MICRO_CLIPS_PER_SECTION);
+
+  for (let i = 0; i < clipsToUpload.length; i++) {
+    await uploadRecordingBlob(
+      clipsToUpload[i],
+      `webcam_section_${sectionIndex + 1}_clip_${i + 1}`
+    );
+  }
+
+  uploadedSectionRecordings.add(sectionIndex);
+  sectionProctorClips[sectionIndex] = [];
+  currentProctorSection = null;
+}
+
+function attachScreenStopListener() {
+  const screenTrack = screenStream.getVideoTracks()[0];
+
+  screenTrack.addEventListener("ended", () => {
+
+    tabWarningCount++;
+
+    const formData = new FormData();
+
+    if (tabWarningCount >= 2) {
+
+      alert("Second violation detected. The assessment will now be submitted.");
+
+      formData.append("auto_submitted", "1");
+
+      fetch("/record_warning", {
+        method: "POST",
+        body: formData
+      });
+
+      submitAssessment();
+
+    } else {
+
+      alert("Warning: Screen sharing was stopped. One more violation will auto-submit the assessment.");
+
+      formData.append("auto_submitted", "0");
+
+      fetch("/record_warning", {
+        method: "POST",
+        body: formData
+      });
+
+      (async () => {
+        try {
+          screenStream = await navigator.mediaDevices.getDisplayMedia({
+            video: true,
+            audio: false
+          });
+
+          const screenTrack = screenStream.getVideoTracks()[0];
+          const screenSettings = screenTrack.getSettings();
+
+          if (screenSettings.displaySurface && screenSettings.displaySurface !== "monitor") {
+            screenStream.getTracks().forEach(track => track.stop());
+            alert("Please share your entire screen, not a browser tab or window.");
+            submitAssessment();
+            return;
+          }
+
+          attachScreenStopListener();
+
+        } catch (err) {
+          alert("Screen sharing is required to continue the assessment.");
+          submitAssessment();
+        }
+      })();
+    }
+  });
+}
+
+
+
+
+  async function startAssessment() {
+
+  const consent = document.getElementById("recordingConsent");
+
+  if (!consent.checked) {
+    alert("You must consent to screen, webcam, and microphone recording before starting the assessment.");
+    return;
+  }
+
+  try {
+
+    // Screen sharing is required for full-screen monitoring / stop-share violation checks.
+    // We do not upload screen video.
+    screenStream = await navigator.mediaDevices.getDisplayMedia({
+      video: true,
+      audio: false
+    });
+
+    const screenTrack = screenStream.getVideoTracks()[0];
+    const screenSettings = screenTrack.getSettings();
+
+    if (screenSettings.displaySurface && screenSettings.displaySurface !== "monitor") {
+      screenStream.getTracks().forEach(track => track.stop());
+      alert("Please share your entire screen, not a browser tab or window.");
+      return;
+    }
+
+    attachScreenStopListener();
+
+    // Webcam + microphone stream used for distributed micro proctor clips.
+    webcamStream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        width: { ideal: 320 },
+        height: { ideal: 240 },
+        frameRate: { ideal: 10, max: 15 }
+      },
+      audio: true
+    });
+
+    uploadedSectionRecordings = new Set();
+    assessmentSubmitting = false;
+
+    assessmentStarted = true;
+
+    await fetch("/mark_started", {
+      method: "POST"
+    });
+
+    if (!assessmentStartTime) {
+      assessmentStartTime = Date.now();
+    }
+
+    currentSection = null;
+    randomizeSections();
+goTo(SECTIONS[0].questions[0]);
+
+  } catch (err) {
+
+    alert("Screen, camera, and microphone permissions are required to start the assessment.");
+
+    assessmentStarted = false;
+  }
+}
+
+function handleHomeBadgeClick() {
+  if (assessmentStarted && currentPage !== 'results') showLockOverlay();
+  else goTo('home');
+}
+
+// ── LOCK OVERLAY ──
+function showLockOverlay() { document.getElementById('nav-lock-overlay').classList.add('visible'); }
+function closeLockOverlay() { document.getElementById('nav-lock-overlay').classList.remove('visible'); }
+
+
+
+function markAllUnansweredInSection(secIdx) {
+  const sec = SECTIONS[secIdx];
+
+  const titles = {
+    q1:'Find the Number',
+    q2:'Two People Under Interrogation',
+    q3:'Two Trains',
+    s1q4:'Tripling Money Game',
+    s1q5:'Airplane Engine Reliability',
+s1q6:'Heads or Tails',
+s2q4:'Cow Stall Arrangement',
+s2q5:'Airplane Seating',
+s2q6:'Largest Power of 12',
+    q4:'Save Aditi or Help Yourself',
+    q5:'Position of the Survivor',
+    q6:'Climbing a Staircase',
+    q7:'Python Algorithm Task',
+    q8:'Python Data Analysis Task',
+    q9:'Python Coding Task'
+  };
+
+  const explanations = {
+    q1:'Binary search gives optimal strategy.',
+    q2:'Given the stated beliefs, you should stay silent. Your friend is likely to confess, so the likely outcome is: friend confesses, you stay silent.',
+    q3:'The trains move toward each other, so their relative speed is 60 + 90 = 150 km/h. Time = 300 ÷ 150 = 2 hours.',
+    s1q4:'Since the money triples every round and your sibling is assumed to think similarly, passing the money allows it to grow substantially before it is eventually divided equally between both of you.',
+    s1q5:'Equating the failure probabilities of the 2-engine and 4-engine planes gives p = 2/3, which rounds to 0.67.',
+s1q6:'Equating the expected payoffs from choosing Heads and Tails gives p = 5/9, or 55.6%.',
+s2q4:'The optimal arrangement is A C B B B B B C A _ A, or its reverse.',
+s2q5:'The final passenger has a 1/2 probability of sitting in their assigned seat.',
+s2q6:'The largest power of 12 dividing 100! is 12⁴⁸.',
+    q4:'Expected value of helping Aditi is 60%.',
+    q5:'Position 48 survives all rounds.',
+    q6:'The minimum cost path totals $55.',
+    q7:'After removing duplicates and sorting the list, the second largest unique number is 91.',
+    q8:'After grouping the data by Region and calculating average Revenue, East has the highest average revenue.',
+    q9:'After finding each student’s highest score, the highest overall is Manav with 100. The second highest is Kavya in Physics with 99.'
+  };
+
+  const correctAnswers = {
+    q1:'Use midpoint guesses',
+    q2:'Stay silent → Friend confesses, you stay silent',
+    q3:'2 hours',
+    s1q4:'Pass it on',
+    s1q5:'0.67',
+s1q6:'55.6%',
+s2q4:'A C B B B B B C A _ A or A _ A C B B B B B C A',
+s2q5:'0.50',
+s2q6:'48',
+    q4:'Help Aditi (EV=60%)',
+    q5:'Position 48',
+    q6:'2,4,5,7,9,11,13,14,16,17,19 ($55)',
+    q7:'91',
+    q8:'East',
+    q9:'Kavya, Physics'
+  };
+
+  sec.questions.forEach(k => {
+    if (!sessionStorage.getItem(k)) {
+      sessionStorage.setItem(k, JSON.stringify({
+        correct:false,
+        title:titles[k],
+        explanation:explanations[k],
+        correctAnswer:correctAnswers[k]
+      }));
+    }
+  });
+}
+function getAnswerForSubmission(questionId, data) {
+  const finalAnswer = data.userAnswer || "";
+
+  const codeBox = document.getElementById(questionId + "-code");
+
+  if (!codeBox) {
+    return finalAnswer;
+  }
+
+  const submittedCode = codeBox.value.trim();
+
+  if (!submittedCode) {
+    return finalAnswer;
+  }
+
+  return (
+    "Final answer: " + finalAnswer +
+    "\n\nCode submitted:\n" +
+    submittedCode
+  );
+}
+async function saveAllResponsesBeforeSubmit() {
+  for (const q of getActiveQuestions()) {
+    const data = JSON.parse(sessionStorage.getItem(q));
+    if (!data) continue;
+
+    const formData = new FormData();
+
+    formData.append("question_id", q);
+    formData.append("question_text", data.title || q);
+    formData.append(
+  "user_answer",
+  getAnswerForSubmission(q, data)
+);
+    formData.append("correct_answer", data.correctAnswer || "");
+    formData.append("is_correct", data.correct ? 1 : 0);
+
+
+    await fetch("/save_answer", {
+      method: "POST",
+      body: formData
+    });
+  }
+}
+// ── SUBMIT ENTIRE ASSESSMENT ──
+async function submitAssessment() {
+  showSubmitOverlay();
+  closeLockOverlay();
+  closeConfirm();
+
+  assessmentSubmitting = true;
+
+  [0, 1, 2].forEach(i => markAllUnansweredInSection(i));
+  await saveAllResponsesBeforeSubmit();
+
+  stopSectionTimer();
+
+  if (currentSection !== null) {
+    const sec = SECTIONS[currentSection];
+    const timeSpentInSection = sec.duration - sectionTimeLeft;
+
+    if (currentSection === 0) section1Time = timeSpentInSection;
+    if (currentSection === 1) section2Time = timeSpentInSection;
+    if (currentSection === 2) section3Time = timeSpentInSection;
+  }
+
+  let totalScore = 0;
+
+  getActiveQuestions().forEach(q => {
+    const data = JSON.parse(sessionStorage.getItem(q));
+    if (data && data.correct) totalScore++;
+  });
+
+  const totalTimeSeconds = assessmentStartTime
+    ? Math.floor((Date.now() - assessmentStartTime) / 1000)
+    : 0;
+
+  const formData = new FormData();
+  formData.append("total_score", totalScore);
+  formData.append("total_time", totalTimeSeconds);
+  formData.append("section1_time", section1Time);
+  formData.append("section2_time", section2Time);
+  formData.append("section3_time", section3Time);
+
+  await fetch("/complete_attempt", {
+    method: "POST",
+    body: formData
+  });
+
+  // Upload the current section's distributed webcam+microphone clips.
+  await uploadCurrentSectionRecording();
+
+  if (screenStream) {
+    screenStream.getTracks().forEach(track => track.stop());
+  }
+
+  if (webcamStream) {
+    webcamStream.getTracks().forEach(track => track.stop());
+  }
+  hideSubmitOverlay();
+
+  goTo("results");
+}
+
+// ── CONFIRM MODAL ──
+function showConfirm(icon, title, message, onConfirm) {
+  document.getElementById('confirm-icon').textContent = icon;
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-message').textContent = message;
+  const btn = document.getElementById('confirm-ok-btn');
+  btn.onclick = onConfirm;
+  document.getElementById('confirm-overlay').classList.add('visible');
+}
+function closeConfirm() {
+  document.getElementById('confirm-overlay').classList.remove('visible');
+}
+function showSavingOverlay() {
+  document.getElementById("saving-overlay").style.display = "flex";
+}
+
+function hideSavingOverlay() {
+  document.getElementById("saving-overlay").style.display = "none";
+}
+function showSubmitOverlay() {
+  document.getElementById("submit-overlay").style.display = "flex";
+}
+
+function hideSubmitOverlay() {
+  document.getElementById("submit-overlay").style.display = "none";
+}
+function confirmSubmitSection() {
+  const sec = SECTIONS[currentSection];
+  const answered = sec.questions.filter(q => navAnswered.has(q)).length;
+  const total = sec.questions.length;
+  const unanswered = total - answered;
+
+  const msg = unanswered > 0
+    ? `You have ${unanswered} unanswered question${unanswered > 1 ? 's' : ''} in ${sec.name}. Unanswered questions will be marked incorrect. This cannot be undone.`
+    : `You've answered all questions in ${sec.name}. Once submitted you cannot return to this section.`;
+
+  showConfirm('⚠️', `Submit ${sec.name}?`, msg, () => {
+    closeConfirm();
+    submitSection();
+  });
+}
+let sectionSubmitInProgress = false;
+async function submitSection() {
+
+  if (sectionSubmitInProgress) return;
+  sectionSubmitInProgress = true;
+showSavingOverlay();
+stopSectionTimer();
+  closeLockOverlay();
+  closeConfirm();
+
+  try {
+    markAllUnansweredInSection(currentSection);
+
+    const sec = SECTIONS[currentSection];
+
+    const timeSpentInSection = sec.duration - sectionTimeLeft;
+
+    if (currentSection === 0) section1Time = timeSpentInSection;
+    if (currentSection === 1) section2Time = timeSpentInSection;
+    if (currentSection === 2) section3Time = timeSpentInSection;
+
+    const savePromises = [];
+
+    for (const q of sec.questions) {
+
+      const data = JSON.parse(sessionStorage.getItem(q));
+
+      if (!data) continue;
+
+      const formData = new FormData();
+
+      formData.append("question_id", q);
+      formData.append("question_text", data.title || q);
+      formData.append(
+  "user_answer",
+  getAnswerForSubmission(q, data)
+);
+      formData.append("correct_answer", data.correctAnswer || "");
+      formData.append("is_correct", data.correct ? 1 : 0);
+
+      savePromises.push(fetch("/save_answer", {
+        method: "POST",
+        body: formData
+      }));
+    }
+
+    await Promise.all(savePromises);
+
+    await uploadCurrentSectionRecording();
+
+    if (currentSection < 2) {
+
+      stopSectionTimer();
+
+      const nextSection = currentSection + 1;
+
+      currentSection = null;
+
+      goTo(SECTIONS[nextSection].questions[0]);
+
+    } else {
+
+      await submitAssessment();
+
+    }
+
+  } catch (err) {
+
+    console.error("Submit section failed:", err);
+    alert("Section submission failed. Please check your internet connection and try again.");
+
+  } finally {
+     hideSavingOverlay();
+
+    sectionSubmitInProgress = false;
+
+  }
+}
+
+function confirmSubmitAssessment() {
+  closeLockOverlay();
+  let totalAnswered = 0;
+  getActiveQuestions().forEach(q => {
+  if (navAnswered.has(q)) totalAnswered++;
+});
+  const unanswered = 9 - totalAnswered;
+  const msg = unanswered > 0
+    ? `You still have ${unanswered} unanswered question${unanswered > 1 ? 's' : ''}. They will be marked incorrect. Are you sure you want to submit the entire assessment?`
+    : `You've answered all 9 questions. Are you sure you want to submit and see your results?`;
+  showConfirm('🏁', 'Submit Assessment?', msg, () => submitAssessment());
+}
+
+// ── PREV / NEXT NAVIGATION ──
+// Section boundaries: q1-q3 = sec 0, q4-q6 = sec 1, q7-q9 = sec 2
+// Cannot cross section boundaries via prev/next (must use Submit Section).
+function getNextQuestion(from) {
+  const secIdx = getSectionForQ(from);
+  if (secIdx === -1) return null;
+
+  const questions = SECTIONS[secIdx].questions;
+  const idx = questions.indexOf(from);
+
+  if (idx === -1 || idx === questions.length - 1) return null;
+
+  return questions[idx + 1];
+}
+
+function getPrevQuestion(from) {
+  const secIdx = getSectionForQ(from);
+  if (secIdx === -1) return null;
+
+  const questions = SECTIONS[secIdx].questions;
+  const idx = questions.indexOf(from);
+
+  if (idx <= 0) return null;
+
+  return questions[idx - 1];
+}
+function navNext(from) {
+  const to = getNextQuestion(from);
+
+  if (!to) {
+    confirmSubmitSection();
+  } else {
+    goTo(to);
+  }
+}
+
+function navPrev(from) {
+  const to = getPrevQuestion(from);
+
+  if (!to) return;
+
+  goTo(to);
+}
+
+// ── SECTION TIMER ──
+function startSectionTimer(seconds) {
+  stopSectionTimer();
+  sectionTimeLeft = seconds;
+  updateTimerDisplay();
+  sectionTimerInterval = setInterval(() => {
+    sectionTimeLeft--;
+    updateTimerDisplay();
+    if (sectionTimeLeft <= 0) {
+      stopSectionTimer();
+      onTimerExpired();
+    }
+  }, 1000);
+}
+
+function stopSectionTimer() {
+  if (sectionTimerInterval) { clearInterval(sectionTimerInterval); sectionTimerInterval = null; }
+}
+
+function updateTimerDisplay() {
+  const t = document.getElementById('qnav-timer');
+  const v = document.getElementById('qnav-timer-val');
+  if (!t || !v) return;
+  const m = Math.floor(Math.max(0, sectionTimeLeft) / 60);
+  const s = Math.max(0, sectionTimeLeft) % 60;
+  v.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  t.classList.remove('timer-warn','timer-danger');
+  if (sectionTimeLeft <= 60) t.classList.add('timer-danger');
+  else if (sectionTimeLeft <= 300) t.classList.add('timer-warn');
+}
+
+function onTimerExpired() {
+  // Auto-advance: mark all unanswered in current section, upload the rolling section clip, then move on.
+  if (currentSection !== null) {
+    markAllUnansweredInSection(currentSection);
+    const prevSec = currentSection;
+
+    showSavingOverlay();
+
+    uploadCurrentSectionRecording()
+      .catch(err => {
+        console.error("Timed section recording upload failed:", err);
+      })
+      .finally(() => {
+        hideSavingOverlay();
+        currentSection = null;
+
+        if (prevSec < 2) {
+          showTimerExpiredBanner(SECTIONS[prevSec].name, () => goTo(SECTIONS[prevSec + 1].questions[0]));
+        } else {
+          showTimerExpiredBanner(SECTIONS[prevSec].name, () => submitAssessment());
+        }
+      });
+  }
+}
+
+function showTimerExpiredBanner(secName, cb) {
+  const overlay = document.getElementById('nav-lock-overlay');
+  const box = document.getElementById('nav-lock-box');
+  box.innerHTML = `<h2>⏱ Time's Up!</h2><p><strong>${secName}</strong> has ended. Your answers have been saved and you are being moved to the next section.</p><div class="nav-lock-btns"><button class="btn btn-primary" onclick="closeLockOverlay();(${cb.toString()})()">Continue →</button></div>`;
+  overlay.classList.add('visible');
+}
+
+// ── NAVIGATOR ──
+const navAnswered = new Set();
+const navFlagged  = new Set();
+
+function showNavigator() { document.getElementById('qnav-panel').classList.add('visible'); }
+function hideNavigator() { document.getElementById('qnav-panel').classList.remove('visible'); }
+
+// ── GENERIC QUESTION SAVER (silent, re-entrant) ──
+function saveQ(key, isCorrectFn, meta) {
+  const correct = isCorrectFn();
+  if (correct === undefined || correct === null) return;
+
+  if (!meta.userAnswer) {
+    const checked = document.querySelector(`input[name^="${key}"]:checked`);
+    const label = checked?.closest('.choice-card')?.querySelector('.choice-title')?.textContent?.trim();
+    if (label) meta.userAnswer = label;
+  }
+
+  autoSave(key, correct, meta);
+}
+
+// Auto-wire Q3, Q4, Q9 on radio selection
+[ 'q4'].forEach(key => {
+  document.querySelectorAll(`input[name^="${key}"]`).forEach(radio => {
+    radio.addEventListener('change', () => saveQ(
+      key,
+      () => {
+        if (key === 'q3') return document.querySelector('input[name=q3-strat]:checked')?.value === 'pass';
+        if (key === 'q4') return document.querySelector('input[name=q4-strat]:checked')?.value === 'help';
+        if (key === 'q9') return document.querySelector('input[name=q9-ans]:checked')?.value === 'c';
+      },
+      key === 'q3' ? {title:'Give or Share',explanation:'Because your sibling thinks like you, both keep passing. After five rounds of tripling the 50/50 split yields far more than taking early. Cooperation beats defection.',correctAnswer:'Pass it on'}
+      : key === 'q4' ? {title:'Save Aditi or Help Yourself',explanation:'Expected survival if you help: (2/3 × 75%) + (1/3 × 30%) = 60%. That beats the 50% from pulling yourself up.',correctAnswer:'Help Aditi (EV = 60%)'}
+      : {title:'Muddy Head',explanation:'If 1 muddy person: they\'d know in round 1. If 2: both know by round 2. Since neither round gave an answer, at least 3 are muddy. You see M and O — so the third must be you.',correctAnswer:'Yes, I have mud'}
+    ));
+  });
+});
+
+function renderNavGrid() {
+  const sec = SECTIONS[currentSection];
+  if (!sec) return;
+
+  // Update section label
+  document.getElementById('qnav-section-name').textContent = sec.name;
+  document.getElementById('qnav-section-qs').textContent = sec.label;
+
+  // Update submit section button label
+  const secBtn = document.getElementById('qnav-section-btn');
+  secBtn.textContent =
+    currentSection < 2 ? 'Submit Section →' : 'Finish Section →';
+
+  const grid = document.getElementById('qnav-grid');
+  grid.innerHTML = '';
+
+  sec.questions.forEach((q, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'qnav-btn';
+
+    // Show fixed assessment numbering:
+    // Section 1 = 01–03, Section 2 = 04–06, Section 3 = 07–09
+    const displayNumber = currentSection * 3 + i + 1;
+
+    btn.textContent = String(displayNumber).padStart(2, '0');
+    btn.title = 'Go to Question ' + displayNumber;
+
+    if (q === currentPage) {
+      btn.classList.add('nav-current');
+    }
+
+    if (navAnswered.has(q)) {
+      btn.classList.add('nav-answered');
+    }
+
+    if (navFlagged.has(q)) {
+      btn.classList.add('nav-flagged');
+    }
+
+    btn.onclick = () => goTo(q);
+    grid.appendChild(btn);
+  });
+
+  const flagBtn = document.getElementById('qnav-flag-btn');
+
+  if (navFlagged.has(currentPage)) {
+    flagBtn.classList.add('active');
+    flagBtn.textContent = '🚩 Unflag this question';
+  } else {
+    flagBtn.classList.remove('active');
+    flagBtn.textContent = '🚩 Flag this question';
+  }
+
+  updateTimerDisplay();
+}
+function markAnswered(qKey) {
+  navAnswered.add(qKey);
+  if (isQuestionPage(currentPage)) renderNavGrid();
+}
+
+
+function toggleFlagCurrent() {
+  if (!isQuestionPage(currentPage)) return;
+  if (navFlagged.has(currentPage)) navFlagged.delete(currentPage);
+  else navFlagged.add(currentPage);
+  renderNavGrid();
+}
+
+window.addEventListener('popstate', function() {
+  if (assessmentStarted && currentPage !== 'results') {
+    history.pushState(null, '', location.href);
+    showLockOverlay();
+  }
+});
+history.pushState(null, '', location.href);
+
+ 
+// ── Q1: FIND THE NUMBER ──
+let q1Secret = Math.floor(Math.random() * 101);
+let q1Attempts = 0;
+let q1Guesses = [];
+const q1Max = 7;
+ 
+function q1Check() {
+  const input = document.getElementById('q1-guess');
+  const guess = Number(input.value);
+  const fb = document.getElementById('q1-fb');
+  if (isNaN(guess) || guess < 0 || guess > 100) {
+    fb.innerHTML = '<div class="feedback-wrong"><span class="feedback-icon">⚠</span><div class="feedback-body">Enter a number between 0 and 100.</div></div>';
+    return;
+  }
+  q1Guesses.push(guess);
+  const pip = document.getElementById('q1-pip' + (q1Attempts + 1));
+  // Mark as attempted on first valid guess
+  if (!sessionStorage.getItem('q1')) {
+    sessionStorage.setItem('q1', JSON.stringify({ correct: false, title: 'Find the Number', userAnswer: q1Guesses.join(', '), explanation: 'The puzzle tests optimal binary-search style narrowing of possibilities. Seven guesses are enough to identify any number from 0–100.', correctAnswer: 'Use midpoint guesses to halve the range each time.' }));
+    markAnswered('q1');
+    renderNavGrid();
+  }
+  if (guess === q1Secret) {
+    pip.classList.add('correct');
+    fb.innerHTML = `<div class="feedback-correct"><span class="feedback-icon">✓</span><div class="feedback-body"><strong>Correct!</strong> The number was <span class="mono">${q1Secret}</span>. Found in ${q1Attempts + 1} guess${q1Attempts ? 'es' : ''}.</div></div>`;
+    q1End(); return;
+  }
+  q1Attempts++;
+  pip.classList.add('wrong');
+  if (q1Attempts >= q1Max) {
+    fb.innerHTML = `<div class="feedback-wrong"><span class="feedback-icon">✗</span><div class="feedback-body"><strong>Out of guesses.</strong> The number was <span class="mono">${q1Secret}</span>.</div></div>`;
+    q1End(); return;
+  }
+  const dir = guess > q1Secret ? 'Too high ↑' : 'Too low ↓';
+  const left = q1Max - q1Attempts;
+  fb.innerHTML = `<div class="feedback-wrong"><span class="feedback-icon">→</span><div class="feedback-body"><strong>${dir}</strong> — ${left} guess${left !== 1 ? 'es' : ''} remaining.</div></div>`;
+}
+function q1End() {
+  const won = document.getElementById('q1-fb').innerHTML.includes('Correct!');
+  markAnswered('q1');
+  sessionStorage.setItem('q1', JSON.stringify({
+    correct: won,
+    title: 'Find the Number',
+    userAnswer: q1Guesses.join(', '),
+    explanation: 'The puzzle tests optimal binary-search style narrowing of possibilities. Seven guesses are enough to identify any number from 0–100.',
+    correctAnswer: 'Use midpoint guesses to halve the range each time.'
+  }));
+  document.getElementById('q1-guess').disabled = true;
+  document.getElementById('q1-submitBtn').disabled = true;
+}
+initVisualControls();
+
+document.getElementById('q1-guess').addEventListener('keydown', e => { if (e.key === 'Enter') q1Check(); });
+ 
+
+// ── VISUAL ANSWER BUILDERS ──
+function q7GetValues() {
+  return [...document.querySelectorAll('#q7-slots .slot-input')].map(s => s.value.toUpperCase() || '');
+}
+
+function q7CountsUsed(vals) {
+  const c = {A:0,B:0,C:0,'_':0};
+  vals.forEach(v => { if (c[v] !== undefined) c[v]++; });
+  return c;
+}
+
+function updateQ7Counts() {
+  const vals = q7GetValues();
+  const used = q7CountsUsed(vals);
+  const container = document.getElementById('q7-counts');
+  if (!container) return;
+  container.innerHTML = Object.entries(Q7_LIMITS).map(([k, max]) => {
+    const u = used[k] || 0;
+    const rem = max - u;
+    const cls = (u >= max) ? 'count-badge full' : 'count-badge';
+    const label = k === '_' ? '⬜' : k;
+    return `<span class="${cls}">${label}: ${u}/${max} (${Math.max(0,rem)} left)</span>`;
+  }).join('');
+  document.getElementById('q7-ans').value = vals.join(' ').trim();
+  document.querySelectorAll('#q7-slots .slot-input').forEach((inp, i) => {
+    const v = vals[i];
+    if (!v) { inp.classList.remove('filled','over-limit'); return; }
+    const lim = Q7_LIMITS[v];
+    const countUpToHere = vals.slice(0, i+1).filter(x => x === v).length;
+    if (lim === undefined || countUpToHere > lim) { inp.classList.add('over-limit'); inp.classList.remove('filled'); }
+    else { inp.classList.add('filled'); inp.classList.remove('over-limit'); }
+  });
+  const filled = vals.filter(v => v).length;
+  document.getElementById('q7-summary').textContent = filled === 11
+    ? 'All 11 slots filled — answer recorded.'
+    : `${filled}/11 slots filled. Use A, B, C or _ (underscore for empty stall).`;
+  if (filled === 11) saveQ7();
+}
+
+function q7KeyDown(e, i) {
+  const slots = [...document.querySelectorAll('#q7-slots .slot-input')];
+  if (e.key === 'Backspace' || e.key === 'Delete') {
+    if (!slots[i].value && i > 0) { e.preventDefault(); slots[i-1].focus(); slots[i-1].value = ''; updateQ7Counts(); }
+    return;
+  }
+  if (e.key === 'ArrowLeft' && i > 0)  { e.preventDefault(); slots[i-1].focus(); return; }
+  if (e.key === 'ArrowRight' && i < 10) { e.preventDefault(); slots[i+1].focus(); return; }
+}
+
+function q7OnInput(e, i) {
+  const slots = [...document.querySelectorAll('#q7-slots .slot-input')];
+  const raw = slots[i].value.toUpperCase();
+  const allowed = ['A','B','C','_'];
+  if (!raw) { slots[i].value = ''; updateQ7Counts(); return; }
+  const ch = raw.slice(-1);
+  if (!allowed.includes(ch)) { slots[i].value = ''; updateQ7Counts(); return; }
+  const vals = q7GetValues();
+  vals[i] = ch;
+  const used = q7CountsUsed(vals);
+  if (used[ch] > Q7_LIMITS[ch]) {
+    slots[i].value = '';
+    document.getElementById('q7-summary').textContent = `⚠ Already used all ${Q7_LIMITS[ch]} of "${ch}". Try a different letter.`;
+    updateQ7Counts(); return;
+  }
+  slots[i].value = ch;
+  updateQ7Counts();
+  if (i < 10) slots[i+1].focus();
+}
+
+function clearQ7Board() {
+  document.querySelectorAll('#q7-slots .slot-input').forEach(s => { s.value = ''; s.classList.remove('filled','over-limit'); });
+  document.getElementById('q7-ans').value = '';
+  updateQ7Counts();
+}
+
+function initVisualControls() {
+  const q5Grid = document.getElementById('q5-grid');
+  if (q5Grid && !q5Grid.children.length) {
+    for (let i = 1; i <= 53; i++) {
+      const b = document.createElement('button'); b.type='button'; b.className='pos-btn'; b.textContent=i;
+      b.onclick = () => { document.getElementById('q5-ans').value = i; document.querySelectorAll('#q5-grid .pos-btn').forEach(x=>x.classList.remove('selected')); b.classList.add('selected'); document.getElementById('q5-summary').textContent = `Selected starting position: ${i}`; saveQ5(); };
+      q5Grid.appendChild(b);
+    }
+  }
+  const q6Grid = document.getElementById('q6-grid');
+  if (q6Grid && !q6Grid.children.length) {
+    for (let i = 1; i <= 20; i++) {
+      const b = document.createElement('button'); b.type='button'; b.className='step-btn'; b.textContent=i;
+      b.onclick = () => { b.classList.toggle('selected'); updateQ6Path(); };
+      q6Grid.appendChild(b);
+    }
+  }
+  const q7Slots = document.getElementById('q7-slots');
+  if (q7Slots && !q7Slots.children.length) {
+    for (let i = 0; i < 11; i++) {
+      const inp = document.createElement('input');
+      inp.type = 'text'; inp.maxLength = 1; inp.className = 'slot-input';
+      inp.dataset.index = i;
+      inp.setAttribute('autocomplete','off'); inp.setAttribute('spellcheck','false');
+      inp.addEventListener('keydown', e => q7KeyDown(e, i));
+      inp.addEventListener('input', e => q7OnInput(e, i));
+      q7Slots.appendChild(inp);
+    }
+    updateQ7Counts();
+  }
+  syncQ8(document.getElementById('q8-ans')?.value || 50);
+}
+
+function updateQ6Path() {
+  const selected = [...document.querySelectorAll('#q6-grid .step-btn.selected')].map(b => Number(b.textContent)).sort((a,b)=>a-b);
+  document.getElementById('q6-ans').value = selected.join(',');
+  document.getElementById('q6-summary').textContent = selected.length ? `Current path: ${selected.join(' → ')}` : 'Tap steps in your chosen path. Tap again to remove.';
+  saveQ6();
+}
+function clearQ6Path() { document.querySelectorAll('#q6-grid .step-btn').forEach(b=>b.classList.remove('selected')); updateQ6Path(); }
+function syncQ8FromSlider(value) {
+  const v = Math.max(0, Math.min(100, Math.round(Number(value) * 10) / 10));
+  const ans = document.getElementById('q8-ans');
+  const read = document.getElementById('q8-readout');
+  if (ans) ans.value = v.toFixed(1);
+  if (read) read.textContent = v.toFixed(1);
+  saveQ8();
+}
+function syncQ8FromNumber(value) {
+  let v = Number(value);
+  if (isNaN(v)) return;
+  v = Math.max(0, Math.min(100, Math.round(v * 10) / 10));
+  const ans = document.getElementById('q8-ans');
+  const slider = document.getElementById('q8-slider');
+  const read = document.getElementById('q8-readout');
+  if (ans) ans.value = v.toFixed(1);
+  if (slider) slider.value = v;
+  if (read) read.textContent = v.toFixed(1);
+  saveQ8();
+}
+// Keep syncQ8 as alias for any legacy calls (e.g. resetGameStateOnly)
+function syncQ8(value) { syncQ8FromSlider(value); }
+
+// ── AUTO-SAVE HELPERS (silent, re-entrant, no input locking) ──
+function autoSave(key, correct, meta) {
+  sessionStorage.setItem(key, JSON.stringify({ correct, ...meta }));
+  markAnswered(key);
+  renderNavGrid();
+  if (key !== 'q1') {
+    const fb = document.getElementById(key + '-fb');
+    if (fb) {
+      fb.innerHTML = '<div class="feedback-saved"><span class="feedback-icon">✓</span><div class="feedback-body"><strong>Answer recorded.</strong> You can continue or change your answer before submitting the section.</div></div>';
+    }
+  }
+}
+// ── Q2: save when both dropdowns chosen ──
+function saveQ2() {
+  syncChoiceCardSelection();
+  const strat = document.querySelector('input[name="q2-strat"]:checked');
+  const out   = document.querySelector('input[name="q2-out"]:checked');
+  if (!strat || !out) return;
+
+  const stratLabelMap = {
+    confess: 'Confess',
+    silent: 'Stay silent'
+  };
+  const outcomeLabelMap = {
+    both_confess: 'Both confess',
+    you_confess: 'You confess, friend silent',
+    friend_confesses: 'Friend confesses, you silent',
+    both_silent: 'Both stay silent'
+  };
+
+  const correct = strat.value === 'silent' && out.value === 'friend_confesses';
+  const userAnswer = `${stratLabelMap[strat.value] || strat.value} → ${outcomeLabelMap[out.value] || out.value}`;
+
+  autoSave('q2', correct, {
+    title:'Two People Under Interrogation',
+    userAnswer,
+    explanation:'Given the stated beliefs, you should stay silent. Your friend is likely to confess, so the likely outcome is: friend confesses, you stay silent.',
+    correctAnswer:'Stay silent → Friend confesses, you stay silent'
+  });
+}
+document.querySelectorAll('input[name="q2-strat"], input[name="q2-out"]').forEach(r => r.addEventListener('change', saveQ2));
+async function runQ3Python() {
+  const code = document.getElementById("q3-code").value;
+  const outputBox = document.getElementById("q3-output");
+
+  outputBox.textContent = "Running...";
+
+  const formData = new FormData();
+  formData.append("code", code);
+
+  try {
+    const response = await fetch("/run_python", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await response.json();
+    outputBox.textContent = data.output || "No output.";
+
+  } catch (err) {
+    outputBox.textContent = "Error running Python code.";
+    console.error(err);
+  }
+}
+
+function saveQ3() {
+
+  const answerRaw =
+    document.getElementById("q3-final-answer").value.trim();
+
+  if (!answerRaw) {
+
+    sessionStorage.removeItem("q3");
+    navAnswered.delete("q3");
+    renderNavGrid();
+    return;
+  }
+
+  const answer = Number(answerRaw);
+
+  const correct =
+    Math.abs(answer - 2) < 0.001;
+
+  autoSave("q3", correct, {
+    title: "Two Trains",
+    userAnswer: answerRaw,
+    explanation:
+      "The trains are moving toward each other, so their relative speed is 60 + 90 = 150 km/h. Time = distance ÷ relative speed = 300 ÷ 150 = 2 hours.",
+    correctAnswer: "2 hours"
+  });
+}
+function saveS1Q4() {
+  syncChoiceCardSelection();
+
+  const choice =
+    document.querySelector('input[name="s1q4-choice"]:checked');
+
+  if (!choice) return;
+
+  const correct = choice.value === "pass";
+
+  autoSave("s1q4", correct, {
+    title: "Tripling Money Game",
+    userAnswer:
+      choice.value === "pass"
+        ? "Pass it on"
+        : "Take the money",
+    explanation:
+      "Since the money triples every round and your sibling is assumed to think similarly, passing allows the amount to grow before it is divided equally.",
+    correctAnswer: "Pass it on"
+  });
+}
+function saveS1Q5() {
+  const answerRaw =
+    document.getElementById("s1q5-answer").value.trim();
+
+  if (!answerRaw) {
+    sessionStorage.removeItem("s1q5");
+    navAnswered.delete("s1q5");
+    renderNavGrid();
+    return;
+  }
+
+  const answer = Number(answerRaw);
+  const correct = Math.abs(answer - 0.67) < 0.0001;
+
+  autoSave("s1q5", correct, {
+    title: "Airplane Engine Reliability",
+    userAnswer: answerRaw,
+    explanation:
+      "The 2-engine plane fails with probability (1-p)². The 4-engine plane fails when 3 or 4 engines fail, giving 4p(1-p)³ + (1-p)⁴. Equating the two probabilities gives p = 2/3, which rounds to 0.67.",
+    correctAnswer: "0.67"
+  });
+}
+
+function saveS1Q6() {
+  const answerRaw =
+    document.getElementById("s1q6-answer").value.trim();
+
+  if (!answerRaw) {
+    sessionStorage.removeItem("s1q6");
+    navAnswered.delete("s1q6");
+    renderNavGrid();
+    return;
+  }
+
+  const answer = Number(answerRaw);
+  const correct = Math.abs(answer - 55.6) < 0.051;
+
+  autoSave("s1q6", correct, {
+    title: "Heads or Tails",
+    userAnswer: answerRaw + "%",
+    explanation:
+      "Expected payoff from Heads is 20p - 10(1-p) = 30p - 10. Expected payoff from Tails is -12p + 30(1-p) = 30 - 42p. Equating them gives p = 5/9 = 55.6%.",
+    correctAnswer: "55.6%"
+  });
+}
+// ── Q5: save on position click ──
+function saveQ5() {
+  const answer = Number(document.getElementById('q5-ans').value);
+  if (isNaN(answer) || answer < 1 || answer > 53) return;
+  const correct = answer === 48;
+  autoSave('q5', correct, { title:'Position of the Survivor', userAnswer:`Position ${answer}`, explanation:'Round 1 (keep every 4th): survivors at 4, 8, 12, …, 52. Round 2 (keep every 2nd): 8, 16, 24, 32, 40, 48. Position 48 survives all subsequent rounds.', correctAnswer:'Position 48' });
+}
+
+// ── Q6: save on any path change ──
+function saveQ6() {
+  const raw = document.getElementById('q6-ans').value.replace(/\s/g, '');
+  if (!raw) { sessionStorage.removeItem('q6'); navAnswered.delete('q6'); renderNavGrid(); return; }
+  const correct = raw === '2,4,5,7,9,11,13,14,16,17,19';
+  autoSave('q6', correct, { title:'Climbing a Staircase', userAnswer:raw.split(',').join(', '), explanation:'The path 2, 4, 5, 7, 9, 11, 13, 14, 16, 17, 19 has a minimum total cost of $55. This avoids costly steps like 3 ($9), 6 ($36), 10 ($100), and 15 ($225).', correctAnswer:'2, 4, 5, 7, 9, 11, 13, 14, 16, 17, 19 (total $55)' });
+}
+async function runQ7Python() {
+
+  const code = document.getElementById("q7-code").value;
+  const outputBox = document.getElementById("q7-output");
+
+  outputBox.textContent = "Running...";
+
+  const formData = new FormData();
+
+  formData.append("code", code);
+  formData.append("question_id", "q7");
+
+  try {
+
+    const response = await fetch("/run_python", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await response.json();
+
+    outputBox.textContent =
+      data.output || "No output.";
+
+  } catch (err) {
+
+    outputBox.textContent =
+      "Error running Python code.";
+
+    console.error(err);
+  }
+}
+function saveS2Q4() {
+  const answerRaw =
+    document.getElementById("s2q4-answer").value.trim();
+
+  if (!answerRaw) {
+    sessionStorage.removeItem("s2q4");
+    navAnswered.delete("s2q4");
+    renderNavGrid();
+    return;
+  }
+
+  const normalized = answerRaw
+    .toUpperCase()
+    .replace(/\s+/g, "");
+
+  const validCharacters = /^[ABC_]+$/.test(normalized);
+
+  const correctCounts =
+    (normalized.match(/A/g) || []).length === 3 &&
+    (normalized.match(/B/g) || []).length === 5 &&
+    (normalized.match(/C/g) || []).length === 2 &&
+    (normalized.match(/_/g) || []).length === 1 &&
+    normalized.length === 11;
+
+  const optimalArrangement =
+    normalized === "ACBBBBBCA_A" ||
+    normalized === "A_ACBBBBBCA";
+
+  const correct =
+    validCharacters &&
+    correctCounts &&
+    optimalArrangement;
+
+  autoSave("s2q4", correct, {
+    title: "Cow Stall Arrangement",
+    userAnswer: answerRaw,
+    explanation:
+      "Evaluating the possible arrangements shows that A C B B B B B C A _ A, or its reverse, minimises the probability of adjacent aggressive cows.",
+    correctAnswer: "A C B B B B B C A _ A"
+  });
+}
+
+function saveS2Q5() {
+  const answerRaw =
+    document.getElementById("s2q5-answer").value.trim();
+
+  if (!answerRaw) {
+    sessionStorage.removeItem("s2q5");
+    navAnswered.delete("s2q5");
+    renderNavGrid();
+    return;
+  }
+
+  const answer = Number(answerRaw);
+  const correct = Math.abs(answer - 0.50) < 0.005;
+
+  autoSave("s2q5", correct, {
+    title: "Airplane Seating",
+    userAnswer: answerRaw,
+    explanation:
+      "The process eventually reduces to whether the first passenger's seat or the final passenger's seat is selected first. These two outcomes are equally likely, so the probability is 1/2.",
+    correctAnswer: "0.50"
+  });
+}
+
+function saveS2Q6() {
+  const answerRaw =
+    document.getElementById("s2q6-answer").value.trim();
+
+  if (!answerRaw) {
+    sessionStorage.removeItem("s2q6");
+    navAnswered.delete("s2q6");
+    renderNavGrid();
+    return;
+  }
+
+  const answer = Number(answerRaw);
+  const correct = answer === 48;
+
+  autoSave("s2q6", correct, {
+    title: "Largest Power of 12",
+    userAnswer: answerRaw,
+    explanation:
+      "Since 12 = 2² × 3, the exponent is min(floor(v₂(100!)/2), v₃(100!)). Here v₂(100!) = 97 and v₃(100!) = 48, giving min(48, 48) = 48.",
+    correctAnswer: "48"
+  });
+}
+// ── Q7: auto-save when all 11 slots valid ──
+
+function saveQ7() {
+
+  const answerRaw =
+    document.getElementById("q7-final-answer").value.trim();
+
+  if (!answerRaw) {
+
+    sessionStorage.removeItem("q7");
+    navAnswered.delete("q7");
+    renderNavGrid();
+    return;
+  }
+
+  const correct =
+    Number(answerRaw) === 91;
+
+  autoSave("q7", correct, {
+    title: "Python Algorithm Task",
+    userAnswer: answerRaw,
+    explanation:
+      "After removing duplicates and sorting the list, the second largest unique number is 91.",
+    correctAnswer: "91"
+  });
+}
+async function runQ8Python() {
+
+  const code = document.getElementById("q8-code").value;
+  const outputBox = document.getElementById("q8-output");
+
+  outputBox.textContent = "Running...";
+
+  const formData = new FormData();
+
+  formData.append("code", code);
+  formData.append("question_id", "q8");
+
+  try {
+
+    const response = await fetch("/run_python", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await response.json();
+
+    outputBox.textContent =
+      data.output || "No output.";
+
+  } catch (err) {
+
+    outputBox.textContent =
+      "Error running Python code.";
+
+    console.error(err);
+  }
+}
+// ── Q8: save immediately on any slider/input change ──
+function saveQ8() {
+
+  const answerRaw =
+    document.getElementById("q8-final-answer").value.trim();
+
+  if (!answerRaw) {
+
+    sessionStorage.removeItem("q8");
+    navAnswered.delete("q8");
+    renderNavGrid();
+    return;
+  }
+
+  const normalized =
+    answerRaw.toLowerCase().replace(/\s+/g, "");
+
+  const correct =
+    normalized === "east";
+
+  autoSave("q8", correct, {
+    title: "Python Data Analysis Task",
+    userAnswer: answerRaw,
+    explanation:
+      "After grouping the data by Region and calculating average Revenue, east has the highest average revenue.",
+    correctAnswer: "East"
+  });
+}
+// Q8 is wired via syncQ8 → saveQ8 on every oninput
+async function runQ9Python() {
+  const code = document.getElementById("q9-code").value;
+  const outputBox = document.getElementById("q9-output");
+
+  outputBox.textContent = "Running...";
+
+  const formData = new FormData();
+  formData.append("code", code);
+  formData.append("question_id", "q9");
+
+  try {
+    const response = await fetch("/run_python", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await response.json();
+    outputBox.textContent = data.output || "No output.";
+
+  } catch (err) {
+    outputBox.textContent = "Error running Python code.";
+    console.error(err);
+  }
+}
+
+function saveQ9() {
+
+  const answerRaw =
+    document.getElementById("q9-final-answer").value.trim();
+
+  if (!answerRaw) {
+
+    sessionStorage.removeItem("q9");
+    navAnswered.delete("q9");
+    renderNavGrid();
+    return;
+  }
+
+  const normalized =
+    answerRaw.toLowerCase().replace(/\s+/g, "");
+
+  const correct =
+    normalized === "kavya,physics" ||
+    normalized === "kavyaphysics";
+
+  autoSave("q9", correct, {
+    title: "Python Coding Task",
+    userAnswer: answerRaw,
+    explanation:
+      "After finding each student's highest score, the highest overall is Manav (100). The second highest is Kavya in Physics (99).",
+    correctAnswer: "Kavya, Physics"
+  });
+}
+ 
+// ── RESULTS ──
+function buildResults() {
+  const keys = getActiveQuestions();
+  let score = 0;
+
+  keys.forEach(key => {
+    const raw = sessionStorage.getItem(key);
+    if (!raw) return;
+
+    const data = JSON.parse(raw);
+
+    if (data.correct) {
+      score++;
+    }
+  });
+
+  document.getElementById('scoreBadge').textContent = `${score} / 9`;
+
+  // Candidates must not see answer-level results
+  document.getElementById('scoreComment').textContent = '';
+  document.getElementById('reviewSection').innerHTML = '';
+}
+function resetGameStateOnly() {
+  const userOrderKey =
+  "section_question_order_v3_{{ session.get('user_id', 'anonymous') }}"
+
+localStorage.removeItem(userOrderKey);
+  ['q2','q3','q4','q5','q6','q7','q8','q9'].forEach(k => sessionStorage.removeItem(k));
+  // reset Q1
+  q1Secret = Math.floor(Math.random() * 101);
+  q1Attempts = 0;
+  document.getElementById('q1-guess').disabled = false;
+  document.getElementById('q1-submitBtn').disabled = false;
+  document.getElementById('q1-guess').value = '';
+  document.getElementById('q1-fb').innerHTML = '';
+  for (let i = 1; i <= 7; i++) {
+    document.getElementById('q1-pip' + i).className = 'guess-pip';
+  }
+  // reset all locked questions
+  ['q2','q3','q4','q5','q6','q7','q8','q9'].forEach(k => {
+    const fb = document.getElementById(k + '-fb');
+    if (fb) fb.innerHTML = '';
+    const btn = document.getElementById(k + '-btn');
+    if (btn) btn.disabled = false;
+    const saveBtn = document.getElementById(k + '-save-btn');
+    if (saveBtn) saveBtn.disabled = false;
+    document.querySelectorAll(`input[name^="${k}"]`).forEach(r => { r.disabled = false; r.checked = false; });
+    document.querySelectorAll(`#page-${k} .choice-card`).forEach(c => c.style.pointerEvents = '');
+  });
+  const q5 = document.getElementById('q5-ans'); if (q5) { q5.disabled = false; q5.value = ''; }
+  document.querySelectorAll('#q5-grid .pos-btn').forEach(b => { b.disabled=false; b.classList.remove('selected'); });
+  const q5sum = document.getElementById('q5-summary'); if (q5sum) q5sum.textContent = 'Tap one starting position.';
+  const q6 = document.getElementById('q6-ans'); if (q6) { q6.disabled = false; q6.value = ''; }
+  document.querySelectorAll('#q6-grid .step-btn').forEach(b => { b.disabled=false; b.classList.remove('selected'); });
+  const q6sum = document.getElementById('q6-summary'); if (q6sum) q6sum.textContent = 'Tap steps in your chosen path. Tap again to remove.';
+  const q7 = document.getElementById('q7-ans'); if (q7) { q7.disabled = false; q7.value = ''; }
+  document.querySelectorAll('#q7-slots .slot-input').forEach(b => { b.disabled=false; b.value=''; b.classList.remove('filled','over-limit'); });
+  updateQ7Counts();
+  const q7sum = document.getElementById('q7-summary'); if (q7sum) q7sum.textContent = 'Select a tile, then tap stalls to build the row.';
+  const q8 = document.getElementById('q8-ans'); if (q8) { q8.disabled = false; q8.value = '50.0'; }
+  const q8s = document.getElementById('q8-slider'); if (q8s) { q8s.disabled=false; q8s.value='50'; }
+  syncQ8(50);
+}
+const resumePage = "{{ resume_page|default('') }}";
+
+window.addEventListener("load", function () {
+  randomizeSections();
+
+  if (resumePage && resumePage !== "") {
+
+    assessmentStarted = true;
+
+    const newSec = getSectionForQ(resumePage);
+
+    if (newSec !== -1) {
+      currentSection = newSec;
+      startSectionTimer(SECTIONS[currentSection].duration);
+    }
+
+    goTo(resumePage);
+  }
+});
+document.addEventListener("visibilitychange", function () {
+
+  if (!assessmentStarted) return;
+  if (currentPage === "results") return;
+
+  if (document.hidden) {
+
+    if (tabAlreadyTriggered) return;
+
+    tabAlreadyTriggered = true;
+    tabWarningCount++;
+
+    if (tabWarningCount === 1) {
+
+      const formData = new FormData();
+      formData.append("auto_submitted", "0");
+
+      fetch("/record_warning", {
+        method: "POST",
+        body: formData
+      });
+
+      alert(
+        "Warning: Leaving the assessment window is not allowed. One more violation will auto-submit the assessment."
+      );
+
+    } else {
+
+      const formData = new FormData();
+      formData.append("auto_submitted", "1");
+
+      fetch("/record_warning", {
+        method: "POST",
+        body: formData
+      });
+
+      alert(
+        "Second violation detected. The assessment will now be submitted automatically."
+      );
+
+      submitAssessment();
+    }
+
+  } else {
+
+    tabAlreadyTriggered = false;
+  }
+});
+
+function blockClipboardAction(e) {
+  if (!assessmentStarted) return;
+  if (currentPage === "results") return;
+
+  e.preventDefault();
+  e.stopPropagation();
+
+  alert("Copying, pasting, right-clicking, and clipboard shortcuts are not allowed during the assessment.");
+  return false;
+}
+
+document.addEventListener("copy", blockClipboardAction);
+document.addEventListener("cut", blockClipboardAction);
+document.addEventListener("paste", blockClipboardAction);
+document.addEventListener("contextmenu", blockClipboardAction);
+
+document.addEventListener("keydown", function (e) {
+  const key = e.key.toLowerCase();
+
+  if ((e.ctrlKey || e.metaKey) && ["c", "v", "x", "a"].includes(key)) {
+    blockClipboardAction(e);
+  }
+});
+window.addEventListener("beforeunload", function () {
+
+  if (!assessmentStarted) return;
+
+  if (currentPage === "results") return;
+
+  navigator.sendBeacon("/record_exit_violation");
+
+});
+</script>
+</body>    
+</html>
